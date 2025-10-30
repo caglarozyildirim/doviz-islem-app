@@ -34,13 +34,15 @@ Modern, kullanıcı dostu döviz işlem yönetim sistemi.
 
 ## 🌐 Canlı Demo
 
-[https://doviz-islem-app.vercel.app](https://doviz-islem-app.vercel.app)
+**Production:** [https://doviz-islem-a6xkdlt06-caglar-ozyildirims-projects.vercel.app](https://doviz-islem-a6xkdlt06-caglar-ozyildirims-projects.vercel.app)
+
+**GitHub:** [https://github.com/caglarozyildirim/doviz-islem-app](https://github.com/caglarozyildirim/doviz-islem-app)
 
 ## 💻 Kurulum
 
 ```bash
 # Repository'yi klonlayın
-git clone https://github.com/[kullaniciadi]/doviz-islem-app.git
+git clone https://github.com/caglarozyildirim/doviz-islem-app.git
 
 # Proje dizinine gidin
 cd doviz-islem-app
