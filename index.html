@@ -718,7 +718,7 @@
 
                 <div class="field-group" style="margin-bottom: 20px;">
                     <div class="field-label">VERGİ MUAFİYET</div>
-                    <input type="text" class="field-value readonly" id="vergiMuafiyet" value="Yok" readonly>
+                    <input type="text" class="field-value readonly" id="vergiMuafiyet" value="Hayır" readonly>
                 </div>
 
                 <!-- Exchange Rates Section - NEW -->
@@ -1008,8 +1008,8 @@
             durumBadge.textContent = customer.status;
 
             // Update Vergi Muafiyet - Auto-fill based on customer
-            // Display as "Var" or "Yok" instead of "VAR" or "YOK"
-            document.getElementById('vergiMuafiyet').value = customer.vergiMuafiyet === 'VAR' ? 'Var' : 'Yok';
+            // Display as "Evet" or "Hayır" instead of "VAR" or "YOK"
+            document.getElementById('vergiMuafiyet').value = customer.vergiMuafiyet === 'VAR' ? 'Evet' : 'Hayır';
 
             // Update BSMV based on Vergi Muafiyet
             // Vergi Muafiyet VAR → BSMV YOK
@@ -1480,7 +1480,7 @@
             document.getElementById('unvan').value = '';
             document.getElementById('durumBadge').className = '';
             document.getElementById('durumBadge').textContent = 'Müşteri seçiniz';
-            document.getElementById('vergiMuafiyet').value = 'YOK';
+            document.getElementById('vergiMuafiyet').value = 'Hayır';
             document.getElementById('islemTuru').value = '';
             document.getElementById('kodu').value = '';
             document.getElementById('miktar').value = '';
