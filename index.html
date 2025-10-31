@@ -938,18 +938,18 @@
     </div>
 
     <script>
-        // Customer database with status and BSMV info
+        // Customer database with status, BSMV, and tax exemption info
         const customers = [
-            { name: 'Mehmet GÖR', status: 'Aktif', bsmv: 'YOK' },
-            { name: 'Serkan Yüksel', status: 'Aktif', bsmv: 'VAR' },
-            { name: 'Ahmet Demir', status: 'Pasif', bsmv: 'VAR' },
-            { name: 'Ali Yılmaz', status: 'Aktif', bsmv: 'YOK' },
-            { name: 'Ayşe Şahin', status: 'Aktif', bsmv: 'VAR' },
-            { name: 'Fatma Çelik', status: 'Aktif', bsmv: 'YOK' },
-            { name: 'Zeynep Arslan', status: 'Pasif', bsmv: 'VAR' },
-            { name: 'Elif Öztürk', status: 'Aktif', bsmv: 'YOK' },
-            { name: 'Mustafa Aydın', status: 'Aktif', bsmv: 'VAR' },
-            { name: 'Hüseyin Koç', status: 'Aktif', bsmv: 'YOK' }
+            { name: 'Mehmet GÖR', status: 'Aktif', bsmv: 'YOK', vergiMuafiyet: 'YOK' },
+            { name: 'Serkan Yüksel', status: 'Aktif', bsmv: 'VAR', vergiMuafiyet: 'VAR' },
+            { name: 'Ahmet Demir', status: 'Pasif', bsmv: 'VAR', vergiMuafiyet: 'YOK' },
+            { name: 'Ali Yılmaz', status: 'Aktif', bsmv: 'YOK', vergiMuafiyet: 'VAR' },
+            { name: 'Ayşe Şahin', status: 'Aktif', bsmv: 'VAR', vergiMuafiyet: 'YOK' },
+            { name: 'Fatma Çelik', status: 'Aktif', bsmv: 'YOK', vergiMuafiyet: 'YOK' },
+            { name: 'Zeynep Arslan', status: 'Pasif', bsmv: 'VAR', vergiMuafiyet: 'VAR' },
+            { name: 'Elif Öztürk', status: 'Aktif', bsmv: 'YOK', vergiMuafiyet: 'YOK' },
+            { name: 'Mustafa Aydın', status: 'Aktif', bsmv: 'VAR', vergiMuafiyet: 'VAR' },
+            { name: 'Hüseyin Koç', status: 'Aktif', bsmv: 'YOK', vergiMuafiyet: 'YOK' }
         ];
 
         let selectedCustomer = null;
@@ -1001,6 +1001,9 @@
 
             // Update BSMV
             document.getElementById('bsmv').value = customer.bsmv;
+
+            // Update Vergi Muafiyet - Auto-fill based on customer
+            document.getElementById('vergiMuafiyet').value = customer.vergiMuafiyet;
 
             // Hide autocomplete
             document.getElementById('customerList').classList.remove('active');
@@ -1089,12 +1092,12 @@
             alert('Kurlar yenileniyor... (Bu özellik yakında aktif olacak)');
         }
 
-        // Update calculation with automatic tax (binde 2 if BSMV is VAR)
+        // Update calculation with automatic tax (binde 2 if vergiMuafiyet is YOK)
         function updateCalculation() {
             const kodu = document.getElementById('kodu').value;
             const miktar = parseFloat(document.getElementById('miktar').value) || 0;
             const fiyat = parseFloat(document.getElementById('fiyat').value) || 0;
-            const bsmv = document.getElementById('bsmv').value;
+            const vergiMuafiyet = document.getElementById('vergiMuafiyet').value;
 
             if (!kodu || miktar === 0 || fiyat === 0) {
                 document.getElementById('vergi').value = '0.00';
@@ -1108,10 +1111,10 @@
             // Calculate base amount
             const baseAmount = miktar * fiyat;
 
-            // Calculate tax (binde 2 = 0.002 if BSMV is VAR)
+            // Calculate tax (binde 2 = 0.002 if vergiMuafiyet is YOK)
             let vergi = 0;
-            if (bsmv === 'VAR') {
-                vergi = baseAmount * 0.002; // %0.2 = binde 2
+            if (vergiMuafiyet === 'YOK') {
+                vergi = baseAmount * 0.002; // %0.2 = binde 2 (1000'de 2)
             }
 
             // Total
