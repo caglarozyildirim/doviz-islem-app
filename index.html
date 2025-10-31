@@ -408,6 +408,43 @@
             color: white;
         }
 
+        /* Currency Tag Styles - MINIMAL */
+        .currency-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .currency-tag {
+            padding: 6px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.2s;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .currency-tag:hover {
+            border-color: #667eea;
+            background: #f8fafc;
+        }
+
+        .currency-tag.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+
+        .currency-tag .currency-symbol {
+            font-size: 13px;
+        }
+
         .calculated-box {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -862,32 +899,40 @@
 
                 <div class="form-row">
                     <label>Satılan Para Birimi <span class="req">*</span></label>
-                    <select class="form-select" id="kaynakDoviz" onchange="updateCalculation()">
-                        <option value="">Seçiniz...</option>
-                        <option value="TL">TL - Türk Lirası</option>
-                        <option value="USD">USD - Amerikan Doları</option>
-                        <option value="EUR">EUR - Euro</option>
-                        <option value="GBP">GBP - İngiliz Sterlini</option>
-                        <option value="CHF">CHF - İsviçre Frangı</option>
-                        <option value="JPY">JPY - Japon Yeni</option>
-                        <option value="SAR">SAR - Suudi Riyali</option>
-                        <option value="AED">AED - BAE Dirhemi</option>
-                    </select>
+                    <div class="currency-tags" id="kaynakDovizTags">
+                        <button type="button" class="currency-tag" data-currency="TL" onclick="selectKaynakDoviz('TL')">
+                            <span class="currency-symbol">₺</span> TL
+                        </button>
+                        <button type="button" class="currency-tag" data-currency="EUR" onclick="selectKaynakDoviz('EUR')">
+                            <span class="currency-symbol">€</span> EUR
+                        </button>
+                        <button type="button" class="currency-tag" data-currency="USD" onclick="selectKaynakDoviz('USD')">
+                            <span class="currency-symbol">$</span> USD
+                        </button>
+                        <button type="button" class="currency-tag" data-currency="GBP" onclick="selectKaynakDoviz('GBP')">
+                            <span class="currency-symbol">£</span> GBP
+                        </button>
+                    </div>
+                    <input type="hidden" id="kaynakDoviz" value="">
                 </div>
 
                 <div class="form-row">
                     <label>Alınan Para Birimi <span class="req">*</span></label>
-                    <select class="form-select" id="hedefDoviz" onchange="updateCalculation()">
-                        <option value="">Seçiniz...</option>
-                        <option value="TL">TL - Türk Lirası</option>
-                        <option value="USD">USD - Amerikan Doları</option>
-                        <option value="EUR">EUR - Euro</option>
-                        <option value="GBP">GBP - İngiliz Sterlini</option>
-                        <option value="CHF">CHF - İsviçre Frangı</option>
-                        <option value="JPY">JPY - Japon Yeni</option>
-                        <option value="SAR">SAR - Suudi Riyali</option>
-                        <option value="AED">AED - BAE Dirhemi</option>
-                    </select>
+                    <div class="currency-tags" id="hedefDovizTags">
+                        <button type="button" class="currency-tag" data-currency="TL" onclick="selectHedefDoviz('TL')">
+                            <span class="currency-symbol">₺</span> TL
+                        </button>
+                        <button type="button" class="currency-tag" data-currency="EUR" onclick="selectHedefDoviz('EUR')">
+                            <span class="currency-symbol">€</span> EUR
+                        </button>
+                        <button type="button" class="currency-tag" data-currency="USD" onclick="selectHedefDoviz('USD')">
+                            <span class="currency-symbol">$</span> USD
+                        </button>
+                        <button type="button" class="currency-tag" data-currency="GBP" onclick="selectHedefDoviz('GBP')">
+                            <span class="currency-symbol">£</span> GBP
+                        </button>
+                    </div>
+                    <input type="hidden" id="hedefDoviz" value="">
                 </div>
 
                 <div class="form-row">
@@ -1048,6 +1093,42 @@
 
         let selectedCustomerIndex = -1;
 
+        // Currency selection functions with AUTO-TL LOGIC
+        function selectKaynakDoviz(currency) {
+            // Remove active from all kaynak tags
+            document.querySelectorAll('#kaynakDovizTags .currency-tag').forEach(tag => {
+                tag.classList.remove('active');
+            });
+
+            // Add active to selected tag
+            document.querySelector(`#kaynakDovizTags .currency-tag[data-currency="${currency}"]`).classList.add('active');
+
+            // Set hidden input value
+            document.getElementById('kaynakDoviz').value = currency;
+
+            // AUTO-TL LOGIC: Eğer TL dışında bir para birimi seçildiyse, hedef para birimini otomatik TL yap
+            if (currency !== 'TL') {
+                selectHedefDoviz('TL');
+            }
+
+            updateCalculation();
+        }
+
+        function selectHedefDoviz(currency) {
+            // Remove active from all hedef tags
+            document.querySelectorAll('#hedefDovizTags .currency-tag').forEach(tag => {
+                tag.classList.remove('active');
+            });
+
+            // Add active to selected tag
+            document.querySelector(`#hedefDovizTags .currency-tag[data-currency="${currency}"]`).classList.add('active');
+
+            // Set hidden input value
+            document.getElementById('hedefDoviz').value = currency;
+
+            updateCalculation();
+        }
+
         // Toggle button işlevi
         function selectIslemTuru(tur) {
             currentIslemTuru = tur;
@@ -1195,7 +1276,9 @@
                 return;
             }
 
-            const hedefMiktar = miktar * kur;
+            // Doğru matematiksel hesaplama:
+            // Eğer satılan TL ise böl, değilse çarp
+            const hedefMiktar = kaynakDoviz === 'TL' ? miktar / kur : miktar * kur;
 
             // Para birimi sembollerini belirle
             const getCurrencySymbol = (currency) => {
@@ -1255,7 +1338,7 @@
                 hedefDoviz: hedefDoviz,
                 miktar: miktar,
                 kur: kur,
-                hedefMiktar: miktar * kur,
+                hedefMiktar: kaynakDoviz === 'TL' ? miktar / kur : miktar * kur,
                 banka: document.getElementById('banka').value,
                 durum: editingId ? (transactions.find(t => t.id === editingId)?.durum || autoStatus) : autoStatus,
                 notlar: document.getElementById('notlar').value.trim(),
@@ -1300,6 +1383,11 @@
             document.getElementById('btnAlis').classList.remove('active');
             document.getElementById('btnSatis').classList.remove('active');
 
+            // Currency tag'leri temizle
+            document.querySelectorAll('.currency-tag').forEach(tag => {
+                tag.classList.remove('active');
+            });
+
             editingId = null;
             document.getElementById('musteri').focus();
         }
@@ -1311,8 +1399,8 @@
             editingId = id;
             document.getElementById('musteri').value = transaction.musteri;
             document.getElementById('valor').value = transaction.valor;
-            document.getElementById('kaynakDoviz').value = transaction.kaynakDoviz;
-            document.getElementById('hedefDoviz').value = transaction.hedefDoviz;
+            selectKaynakDoviz(transaction.kaynakDoviz);
+            selectHedefDoviz(transaction.hedefDoviz);
             document.getElementById('miktar').value = transaction.miktar;
             document.getElementById('kur').value = transaction.kur;
             document.getElementById('banka').value = transaction.banka;
@@ -1514,9 +1602,17 @@
         // Currency Functions
         function applyCurrencyRate(code, rate) {
             const kaynakDoviz = document.getElementById('kaynakDoviz').value;
+            const hedefDoviz = document.getElementById('hedefDoviz').value;
 
-            // Sadece satılan para birimi seçiliyse ve seçilen para birimi ile aynıysa kur doldurun
-            if (kaynakDoviz === code) {
+            // Eğer işlem türü seçilmediyse uyarı ver
+            if (!currentIslemTuru) {
+                showToast('Lütfen önce işlem türünü seçin (Döviz Alış/Satış)', 'error');
+                return;
+            }
+
+            // Tıklanan kur, kaynak veya hedef para birimlerinden biriyle eşleşiyorsa kuru doldur
+            // (TL hariç - TL için kur bilgisi olmaz)
+            if (code !== 'TL' && (kaynakDoviz === code || hedefDoviz === code)) {
                 document.getElementById('kur').value = rate.toFixed(4);
                 updateCalculation();
                 showToast(`${code} kuru otomatik dolduruldu!`, 'success');
