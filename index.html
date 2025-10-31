@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Döviz İşlem Yönetimi - Hybrid</title>
+    <title>Döviz İşlem Formu</title>
     <style>
         * {
             margin: 0;
@@ -12,1655 +12,680 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f8fafc;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .main-container {
-            display: grid;
-            grid-template-columns: 420px 1fr;
-            height: 100vh;
-        }
-
-        /* Sol Panel - Hızlı Giriş Formu */
-        .input-panel {
-            background: white;
-            border-right: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .panel-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
             padding: 20px;
         }
 
-        .panel-header h2 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .panel-header p {
-            font-size: 13px;
-            opacity: 0.9;
-        }
-
-        .quick-form {
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        .form-row {
-            margin-bottom: 16px;
-        }
-
-        .form-row label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: #334155;
-            margin-bottom: 6px;
-        }
-
-        .form-row label .req {
-            color: #ef4444;
-        }
-
-        .form-input,
-        .form-select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 2px solid #e2e8f0;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
             border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.2s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .form-input:focus,
-        .form-select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-select {
-            cursor: pointer;
-        }
-
-        .form-textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-            resize: vertical;
-            min-height: 60px;
-            transition: all 0.2s;
-        }
-
-        .form-textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        /* Currency Panel */
-        .currency-panel {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            border-bottom: 1px solid #e2e8f0;
-            padding: 12px 20px;
-        }
-
-        .currency-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .currency-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: #0369a1;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .currency-refresh {
-            background: white;
-            border: 1px solid #bae6fd;
-            padding: 4px 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 11px;
-            color: #0369a1;
-            transition: all 0.2s;
-        }
-
-        .currency-refresh:hover {
-            background: #bae6fd;
-        }
-
-        .currency-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
-
-        .currency-item {
-            background: white;
-            padding: 8px 10px;
-            border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #e0f2fe;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .currency-item:hover {
-            background: #bae6fd;
-            border-color: #0369a1;
-            transform: translateY(-1px);
-        }
-
-        .currency-code {
-            font-size: 12px;
-            font-weight: 700;
-            color: #334155;
-        }
-
-        .currency-rate {
-            font-size: 13px;
-            font-weight: 600;
-            color: #0369a1;
-        }
-
-        .currency-change {
-            font-size: 10px;
-            margin-left: 4px;
-        }
-
-        .currency-change.up { color: #10b981; }
-        .currency-change.down { color: #ef4444; }
-
-        /* Status Badge Styles */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        .status-badge.hazir {
-            background: #d1fae5;
-            color: #047857;
-        }
-
-        .status-badge.bekliyor {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .status-badge.onay-bekliyor {
-            background: #fef3c7;
-            color: #b45309;
-        }
-
-        .status-badge.tamamlandi {
-            background: #d1fae5;
-            color: #047857;
-        }
-
-        .status-badge.iptal {
-            background: #fee2e2;
-            color: #b91c1c;
-        }
-
-        .status-badge.eslesmeyen {
-            background: #fce7f3;
-            color: #be123c;
-        }
-
-        .card-note {
-            background: #fffbeb;
-            border-left: 3px solid #fbbf24;
-            padding: 8px 12px;
-            margin-top: 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            color: #78350f;
-            line-height: 1.5;
-        }
-
-        /* Autocomplete styles */
-        .autocomplete-container {
-            position: relative;
-        }
-
-        .customer-input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .customer-input-wrapper .form-input {
-            padding-right: 40px;
-        }
-
-        .dropdown-toggle-btn {
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 6px;
-            color: #667eea;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-        }
-
-        .dropdown-toggle-btn:hover {
-            background: #eff6ff;
-        }
-
-        .dropdown-toggle-btn svg {
-            width: 16px;
-            height: 16px;
-            transition: transform 0.2s;
-        }
-
-        .dropdown-toggle-btn.active svg {
-            transform: rotate(180deg);
-        }
-
-        .autocomplete-list {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 2px solid #667eea;
-            border-top: none;
-            border-radius: 0 0 8px 8px;
-            max-height: 300px;
-            overflow-y: auto;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            display: none;
-            margin-top: 2px;
-        }
-
-        .autocomplete-list.active {
-            display: block;
-        }
-
-        .autocomplete-list-header {
-            padding: 8px 12px;
-            background: #f8fafc;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
-
-        .autocomplete-list-header-title {
-            font-size: 12px;
-            font-weight: 600;
-            color: #64748b;
-            text-transform: uppercase;
-        }
-
-        .autocomplete-list-header-count {
-            font-size: 11px;
-            color: #94a3b8;
-        }
-
-        .autocomplete-item {
-            padding: 10px 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 14px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .autocomplete-item:hover {
-            background: #f8fafc;
-        }
-
-        .autocomplete-item.selected {
-            background: #eff6ff;
-            color: #667eea;
-            font-weight: 600;
-        }
-
-        .autocomplete-item:last-child {
-            border-bottom: none;
-        }
-
-        .autocomplete-item .customer-name {
-            font-weight: 600;
-            color: #334155;
-        }
-
-        .autocomplete-item .customer-info {
-            font-size: 12px;
-            color: #94a3b8;
-            margin-top: 2px;
-        }
-
-        .toggle-buttons {
+        .header-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
         }
 
-        .toggle-btn {
-            padding: 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.2s;
-            text-align: center;
-        }
-
-        .toggle-btn.alis {
-            color: #059669;
-        }
-
-        .toggle-btn.alis.active {
-            background: #10b981;
-            border-color: #10b981;
-            color: white;
-        }
-
-        .toggle-btn.satis {
-            color: #dc2626;
-        }
-
-        .toggle-btn.satis.active {
-            background: #ef4444;
-            border-color: #ef4444;
-            color: white;
-        }
-
-        /* Currency Tag Styles - MINIMAL */
-        .currency-tags {
+        .header-left, .header-right {
             display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .currency-tag {
-            padding: 6px 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            background: white;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 12px;
-            transition: all 0.2s;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .currency-tag:hover {
-            border-color: #667eea;
-            background: #f8fafc;
-        }
-
-        .currency-tag.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #667eea;
-            color: white;
-        }
-
-        .currency-tag .currency-symbol {
-            font-size: 13px;
-        }
-
-        .calculated-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 16px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .calculated-box label {
-            font-size: 12px;
-            opacity: 0.9;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .calculated-box .amount {
-            font-size: 28px;
-            font-weight: 700;
-        }
-
-        .form-actions {
-            padding: 20px;
-            border-top: 1px solid #e2e8f0;
-            display: flex;
+            flex-direction: column;
             gap: 10px;
         }
 
-        .btn {
+        .field-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .field-label {
+            background: #d0d0d0;
+            padding: 8px 12px;
+            font-weight: bold;
+            font-size: 13px;
+            white-space: nowrap;
+            min-width: 150px;
+        }
+
+        .field-value {
             flex: 1;
-            padding: 14px;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .field-value:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .info-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            background: #333;
+            color: white;
+            padding: 10px 15px;
+            font-weight: bold;
+            margin: 20px 0 10px 0;
+            font-size: 14px;
+        }
+
+        .table-container {
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f0f0f0;
+            padding: 10px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: bold;
+            border: 1px solid #ccc;
+        }
+
+        td {
+            padding: 8px;
+            border: 1px solid #ccc;
+        }
+
+        td input, td select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            font-size: 13px;
+        }
+
+        td input:focus, td select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .currency-tag-cell {
+            display: flex;
+            gap: 4px;
+            padding: 4px;
+        }
+
+        .currency-tag-small {
+            padding: 4px 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+
+        .currency-tag-small:hover {
+            border-color: #667eea;
+            background: #f8fafc;
+        }
+
+        .currency-tag-small.active {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        .btn-add {
+            background: #10b981;
+            color: white;
             border: none;
-            border-radius: 8px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .btn-add:hover {
+            background: #059669;
+        }
+
+        .btn-remove {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .btn-remove:hover {
+            background: #dc2626;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            background: #5568d3;
         }
 
         .btn-secondary {
-            background: white;
-            border: 2px solid #e2e8f0;
-            color: #64748b;
+            background: #e0e0e0;
+            color: #333;
         }
 
         .btn-secondary:hover {
-            background: #f8fafc;
+            background: #d0d0d0;
         }
 
-        /* Sağ Panel - Canlı Liste */
-        .data-panel {
-            background: #f8fafc;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .data-header {
-            background: white;
-            padding: 20px;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .data-header h2 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #334155;
-        }
-
-        .filter-bar {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .filter-btn {
-            padding: 8px 16px;
-            border: 1px solid #e2e8f0;
+        .total-summary {
+            background: #f9fafb;
+            padding: 15px;
+            border: 2px solid #667eea;
             border-radius: 6px;
-            background: white;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.2s;
+            margin-top: 20px;
         }
 
-        .filter-btn.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-
-        .data-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .transaction-card {
-            background: white;
-            border-radius: 10px;
-            padding: 16px;
-            margin-bottom: 12px;
-            border-left: 4px solid transparent;
-            transition: all 0.2s;
-            cursor: pointer;
-            position: relative;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .transaction-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transform: translateY(-2px);
-        }
-
-        .transaction-card.alis {
-            border-left-color: #10b981;
-        }
-
-        .transaction-card.satis {
-            border-left-color: #ef4444;
-        }
-
-        .card-header {
+        .total-row {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-
-        .card-customer {
-            font-weight: 600;
-            font-size: 16px;
-            color: #334155;
-        }
-
-        .card-type {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .card-type.alis {
-            background: #d1fae5;
-            color: #059669;
-        }
-
-        .card-type.satis {
-            background: #fee2e2;
-            color: #dc2626;
-        }
-
-        .card-details {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .detail-item {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .detail-label {
-            font-size: 11px;
-            color: #94a3b8;
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-
-        .detail-value {
+            align-items: center;
+            margin-bottom: 8px;
             font-size: 14px;
-            color: #334155;
-            font-weight: 600;
         }
 
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 12px;
-            border-top: 1px solid #f1f5f9;
+        .total-row:last-child {
+            margin-bottom: 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+            padding-top: 8px;
+            border-top: 2px solid #e0e0e0;
         }
 
-        .card-amount {
-            font-size: 20px;
-            font-weight: 700;
-            color: #334155;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .icon-btn {
-            width: 32px;
-            height: 32px;
-            border: none;
+        .calculated-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
             border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .icon-btn.edit {
-            background: #dbeafe;
-            color: #2563eb;
-        }
-
-        .icon-btn.edit:hover {
-            background: #2563eb;
-            color: white;
-        }
-
-        .icon-btn.delete {
-            background: #fee2e2;
-            color: #dc2626;
-        }
-
-        .icon-btn.delete:hover {
-            background: #dc2626;
-            color: white;
-        }
-
-        .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            color: #94a3b8;
+            margin: 15px 0;
         }
 
-        .empty-state svg {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 20px;
-            opacity: 0.3;
-        }
-
-        /* Stats Footer */
-        .stats-footer {
-            background: white;
-            border-top: 1px solid #e2e8f0;
-            padding: 16px 20px;
-            display: flex;
-            justify-content: space-around;
-        }
-
-        .stat-box {
-            text-align: center;
-        }
-
-        .stat-label {
+        .calculated-display .label {
             font-size: 12px;
-            color: #64748b;
-            margin-bottom: 4px;
+            opacity: 0.9;
+            margin-bottom: 5px;
         }
 
-        .stat-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: #334155;
-        }
-
-        .stat-value.green { color: #10b981; }
-        .stat-value.red { color: #ef4444; }
-        .stat-value.blue { color: #3b82f6; }
-
-        /* Floating Action Button */
-        .fab {
-            position: fixed;
-            bottom: 110px;
-            right: 30px;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            padding: 18px 32px;
-            border-radius: 50px;
-            border: none;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 999;
-            transition: all 0.3s ease;
-            text-transform: none;
-        }
-
-        .fab:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 32px rgba(16, 185, 129, 0.5);
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
-        }
-
-        .fab:active {
-            transform: translateY(-1px);
-        }
-
-        .fab svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        .fab .badge {
-            background: white;
-            color: #059669;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 700;
-            margin-left: 4px;
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: white;
-            padding: 16px 20px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            display: none;
-            align-items: center;
-            gap: 12px;
-            z-index: 1000;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .toast.success {
-            border-left: 4px solid #10b981;
-        }
-
-        .toast.error {
-            border-left: 4px solid #ef4444;
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .main-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto 1fr;
-            }
-
-            .input-panel {
-                border-right: none;
-                border-bottom: 1px solid #e2e8f0;
-            }
+        .calculated-display .amount {
+            font-size: 24px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="main-container">
-        <!-- Sol Panel: Hızlı Giriş Formu -->
-        <div class="input-panel">
-            <div class="panel-header">
-                <h2>⚡ Hızlı İşlem Girişi</h2>
-                <p>Bilgileri girin ve hemen kaydedin</p>
-            </div>
-
-            <!-- Currency Panel -->
-            <div class="currency-panel">
-                <div class="currency-header">
-                    <div class="currency-title">💱 Anlık Kurlar</div>
-                    <button class="currency-refresh" onclick="refreshCurrencies()">🔄 Yenile</button>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header-row">
+            <div class="header-left">
+                <div class="field-group">
+                    <div class="field-label">Müşteri Temsilcisi</div>
+                    <input type="text" class="field-value" id="temsilci" value="Ümit AKYÜZ" readonly>
                 </div>
-                <div class="currency-grid" id="currencyGrid">
-                    <!-- JavaScript ile doldurulacak -->
+                <div class="field-group">
+                    <div class="field-label">İşlem Tarihi</div>
+                    <input type="date" class="field-value" id="islemTarihi">
                 </div>
             </div>
-
-            <div class="quick-form">
-                <div class="form-row">
-                    <label>Müşteri Temsilcisi</label>
-                    <input type="text" class="form-input" id="temsilci" value="Çağlar Özyıldırım" readonly style="background: #f8fafc; color: #64748b; cursor: not-allowed;">
+            <div class="header-right">
+                <div class="field-group">
+                    <div class="field-label">MÜŞTERİ DURUM</div>
+                    <input type="text" class="field-value" id="musteriDurum" placeholder="Müşteri durum bilgisi...">
                 </div>
-
-                <div class="form-row">
-                    <label>Müşteri Adı <span class="req">*</span></label>
-                    <div class="autocomplete-container">
-                        <div class="customer-input-wrapper">
-                            <input type="text" class="form-input" id="musteri" placeholder="Müşteri adını yazın veya listeden seçin..." autocomplete="off">
-                            <button type="button" class="dropdown-toggle-btn" id="dropdownToggle" onclick="toggleCustomerDropdown(event)">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="autocomplete-list" id="autocompleteList"></div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <label>İşlem Türü <span class="req">*</span></label>
-                    <div class="toggle-buttons">
-                        <button type="button" class="toggle-btn alis" id="btnAlis" onclick="selectIslemTuru('ALIŞ')">
-                            Döviz Alış
-                        </button>
-                        <button type="button" class="toggle-btn satis" id="btnSatis" onclick="selectIslemTuru('SATIŞ')">
-                            Döviz Satış
-                        </button>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <label>Valör (Tarih) <span class="req">*</span></label>
-                    <input type="date" class="form-input" id="valor">
-                </div>
-
-                <div class="form-row">
-                    <label>Satılan Para Birimi <span class="req">*</span></label>
-                    <div class="currency-tags" id="kaynakDovizTags">
-                        <button type="button" class="currency-tag" data-currency="TL" onclick="selectKaynakDoviz('TL')">
-                            <span class="currency-symbol">₺</span> TL
-                        </button>
-                        <button type="button" class="currency-tag" data-currency="EUR" onclick="selectKaynakDoviz('EUR')">
-                            <span class="currency-symbol">€</span> EUR
-                        </button>
-                        <button type="button" class="currency-tag" data-currency="USD" onclick="selectKaynakDoviz('USD')">
-                            <span class="currency-symbol">$</span> USD
-                        </button>
-                        <button type="button" class="currency-tag" data-currency="GBP" onclick="selectKaynakDoviz('GBP')">
-                            <span class="currency-symbol">£</span> GBP
-                        </button>
-                    </div>
-                    <input type="hidden" id="kaynakDoviz" value="">
-                </div>
-
-                <div class="form-row">
-                    <label>Alınan Para Birimi <span class="req">*</span></label>
-                    <div class="currency-tags" id="hedefDovizTags">
-                        <button type="button" class="currency-tag" data-currency="TL" onclick="selectHedefDoviz('TL')">
-                            <span class="currency-symbol">₺</span> TL
-                        </button>
-                        <button type="button" class="currency-tag" data-currency="EUR" onclick="selectHedefDoviz('EUR')">
-                            <span class="currency-symbol">€</span> EUR
-                        </button>
-                        <button type="button" class="currency-tag" data-currency="USD" onclick="selectHedefDoviz('USD')">
-                            <span class="currency-symbol">$</span> USD
-                        </button>
-                        <button type="button" class="currency-tag" data-currency="GBP" onclick="selectHedefDoviz('GBP')">
-                            <span class="currency-symbol">£</span> GBP
-                        </button>
-                    </div>
-                    <input type="hidden" id="hedefDoviz" value="">
-                </div>
-
-                <div class="form-row">
-                    <label>Satılan Miktar <span class="req">*</span></label>
-                    <input type="number" class="form-input" id="miktar" placeholder="0.00" step="0.01" min="0" oninput="updateCalculation()">
-                </div>
-
-                <div class="form-row">
-                    <label>Kur <span class="req">*</span></label>
-                    <input type="number" class="form-input" id="kur" placeholder="0.0000" step="0.0001" min="0" oninput="updateCalculation()">
-                </div>
-
-                <div class="form-row">
-                    <div class="calculated-box">
-                        <label id="calculationLabel">HESAPLAMA</label>
-                        <div class="amount" id="tutarDisplay" style="font-size: 20px; line-height: 1.4;">-</div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <label>Banka Hesabı</label>
-                    <select class="form-select" id="banka" style="font-size: 13px;">
-                        <option value="">Seçiniz...</option>
-                        <option value="İş Bankası Ticari - TR33 0006 4000 0011 2345 6789 01">İş Bankası Ticari - TR33 0006 4000 0011 2345 6789 01</option>
-                        <option value="Garanti BBVA Ticari - TR55 0006 2000 0550 0006 2958 47">Garanti BBVA Ticari - TR55 0006 2000 0550 0006 2958 47</option>
-                        <option value="Yapı Kredi Ticari - TR76 0006 7010 0000 0012 3456 78">Yapı Kredi Ticari - TR76 0006 7010 0000 0012 3456 78</option>
-                        <option value="Akbank Ticari - TR98 0004 6006 0888 8000 1234 56">Akbank Ticari - TR98 0004 6006 0888 8000 1234 56</option>
-                        <option value="QNB Finansbank Ticari - TR12 0011 1000 0000 0123 4567 89">QNB Finansbank Ticari - TR12 0011 1000 0000 0123 4567 89</option>
-                        <option value="Ziraat Bankası Ticari - TR44 0001 0001 7845 6789 3050 01">Ziraat Bankası Ticari - TR44 0001 0001 7845 6789 3050 01</option>
-                        <option value="Halkbank Ticari - TR66 0001 2009 4520 0016 0000 01">Halkbank Ticari - TR66 0001 2009 4520 0016 0000 01</option>
-                        <option value="Vakıfbank Ticari - TR88 0001 5001 5800 7289 1234 56">Vakıfbank Ticari - TR88 0001 5001 5800 7289 1234 56</option>
-                    </select>
-                </div>
-
-                <div class="form-row">
-                    <label>Not / Açıklama</label>
-                    <textarea class="form-textarea" id="notlar" placeholder="İşlemle ilgili notlarınızı buraya yazabilirsiniz..."></textarea>
-                </div>
-            </div>
-
-            <div class="form-actions">
-                <button class="btn btn-secondary" onclick="clearForm()">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                    </svg>
-                    Temizle
-                </button>
-                <button class="btn btn-primary" onclick="saveTransaction()">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                    Kaydet & Devam
-                </button>
             </div>
         </div>
 
-        <!-- Sağ Panel: Canlı İşlem Listesi -->
-        <div class="data-panel">
-            <div class="data-header" style="flex-direction: column; align-items: stretch; gap: 12px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h2>📊 İşlem Geçmişi (<span id="totalTransactions">0</span>)</h2>
-                    <div class="filter-bar">
-                        <button class="filter-btn active" data-filter-type="transaction" onclick="filterTransactions('all')">Tümü</button>
-                        <button class="filter-btn" data-filter-type="transaction" onclick="filterTransactions('ALIŞ')">Alış</button>
-                        <button class="filter-btn" data-filter-type="transaction" onclick="filterTransactions('SATIŞ')">Satış</button>
-                    </div>
-                </div>
-                <div style="display: flex; justify-content: flex-start; align-items: center; gap: 8px; flex-wrap: wrap;">
-                    <span style="font-size: 12px; color: #64748b; font-weight: 600;">Durum Filtresi:</span>
-                    <button class="filter-btn active" data-filter-type="status" onclick="filterByStatus('all')">Tümü</button>
-                    <button class="filter-btn" data-filter-type="status" onclick="filterByStatus('hazir')">Ödeme Hazır</button>
-                    <button class="filter-btn" data-filter-type="status" onclick="filterByStatus('bekliyor')">Ödeme Bekliyor</button>
-                    <button class="filter-btn" data-filter-type="status" onclick="filterByStatus('eslesmeyen')">Eşleşmeyen</button>
-                    <button class="filter-btn" data-filter-type="status" onclick="filterByStatus('onay-bekliyor')">Onay Bekliyor</button>
-                </div>
+        <!-- Customer Info -->
+        <div class="info-row">
+            <div class="field-group">
+                <div class="field-label">UNVAN</div>
+                <input type="text" class="field-value" id="unvan" placeholder="Müşteri unvanı...">
             </div>
-
-            <div class="data-content" id="transactionList">
-                <div class="empty-state">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    <h3>Henüz işlem yok</h3>
-                    <p>Sol panelden hızlıca işlem ekleyebilirsiniz</p>
-                </div>
-            </div>
-
-            <div class="stats-footer">
-                <div class="stat-box">
-                    <div class="stat-label">Toplam İşlem</div>
-                    <div class="stat-value blue" id="statTotal">0</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Döviz Alış</div>
-                    <div class="stat-value green" id="statAlis">0</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Döviz Satış</div>
-                    <div class="stat-value red" id="statSatis">0</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Toplam Tutar</div>
-                    <div class="stat-value" id="statAmount">0 ₺</div>
-                </div>
+            <div class="field-group">
+                <div class="field-label">VERGİ MUAFİYET</div>
+                <select class="field-value" id="vergiMuafiyet">
+                    <option value="YOK">Yok</option>
+                    <option value="VAR">Var</option>
+                </select>
             </div>
         </div>
-    </div>
 
-    <!-- Floating Action Button -->
-    <button class="fab" id="sendToBank" onclick="sendToBank()">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-        </svg>
-        Tüm İşlemleri Kaydet
-        <span class="badge" id="fabBadge">0</span>
-    </button>
+        <!-- Transaction Section -->
+        <div class="section-title">İŞLEM BİLGİLERİ</div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">İşlem</th>
+                        <th style="width: 100px;">Kodu</th>
+                        <th style="width: 120px;">Miktar</th>
+                        <th style="width: 80px;">BSMV</th>
+                        <th style="width: 100px;">Fiyat (Kur)</th>
+                        <th style="width: 100px;">Vergi</th>
+                        <th style="width: 150px;">Tutar</th>
+                        <th style="width: 80px;">Birim</th>
+                        <th style="width: 120px;">Valör Tarihi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <select id="islemTuru" onchange="updateCalculation()">
+                                <option value="">Seç</option>
+                                <option value="ALIŞ">ALIŞ</option>
+                                <option value="SATIŞ">SATIŞ</option>
+                            </select>
+                        </td>
+                        <td>
+                            <div class="currency-tag-cell">
+                                <button type="button" class="currency-tag-small" data-currency="TL" onclick="selectCurrency('TL')">TL</button>
+                                <button type="button" class="currency-tag-small" data-currency="USD" onclick="selectCurrency('USD')">USD</button>
+                                <button type="button" class="currency-tag-small" data-currency="EUR" onclick="selectCurrency('EUR')">EUR</button>
+                                <button type="button" class="currency-tag-small" data-currency="GBP" onclick="selectCurrency('GBP')">GBP</button>
+                            </div>
+                            <input type="hidden" id="kodu" value="">
+                        </td>
+                        <td>
+                            <input type="number" id="miktar" step="0.01" placeholder="0.00" oninput="updateCalculation()">
+                        </td>
+                        <td>
+                            <select id="bsmv">
+                                <option value="YOK">YOK</option>
+                                <option value="VAR">VAR</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="number" id="fiyat" step="0.0001" placeholder="0.0000" oninput="updateCalculation()">
+                        </td>
+                        <td>
+                            <input type="number" id="vergi" step="0.01" placeholder="0.00" value="0.00">
+                        </td>
+                        <td>
+                            <input type="text" id="tutar" readonly style="background: #f0f0f0; font-weight: bold;">
+                        </td>
+                        <td>
+                            <input type="text" id="birim" placeholder="">
+                        </td>
+                        <td>
+                            <input type="date" id="valorTarihi">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-    <div class="toast" id="toast">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-        <span id="toastMessage"></span>
+        <!-- Calculated Total Display -->
+        <div class="calculated-display">
+            <div class="label">TOPLAM TUTAR</div>
+            <div class="amount" id="toplamTutar">0,00 TL</div>
+        </div>
+
+        <!-- Payment Banks Section -->
+        <div class="section-title">ÖDEME BANKALARI (Çoklu Hesap)</div>
+        <div class="table-container">
+            <table id="paymentBanksTable">
+                <thead>
+                    <tr>
+                        <th style="width: 250px;">Ödeme Banka</th>
+                        <th style="width: 100px;">Kodu</th>
+                        <th style="width: 150px;">Miktar</th>
+                        <th style="width: 80px;">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody id="paymentBanksBody">
+                    <tr>
+                        <td>
+                            <select class="payment-bank">
+                                <option value="">Banka Seçiniz...</option>
+                                <option value="Denizbank">Denizbank</option>
+                                <option value="İşbankası">İşbankası</option>
+                                <option value="Garanti BBVA">Garanti BBVA</option>
+                                <option value="Yapı Kredi">Yapı Kredi</option>
+                                <option value="Akbank">Akbank</option>
+                                <option value="QNB Finansbank">QNB Finansbank</option>
+                                <option value="Ziraat Bankası">Ziraat Bankası</option>
+                                <option value="Halkbank">Halkbank</option>
+                                <option value="Vakıfbank">Vakıfbank</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="payment-currency">
+                                <option value="TL">TL</option>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="GBP">GBP</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="number" class="payment-amount" step="0.01" placeholder="0.00" oninput="calculatePaymentTotal()">
+                        </td>
+                        <td style="text-align: center;">
+                            <button type="button" class="btn-remove" onclick="removePaymentRow(this)">Sil</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" class="btn-add" onclick="addPaymentRow()">+ Ödeme Hesabı Ekle</button>
+        </div>
+
+        <!-- Payment Summary -->
+        <div class="total-summary">
+            <div class="total-row">
+                <span>İşlem Tutarı:</span>
+                <span id="islemTutari">0,00 TL</span>
+            </div>
+            <div class="total-row">
+                <span>Ödeme Toplamı:</span>
+                <span id="odemeToplami">0,00 TL</span>
+            </div>
+            <div class="total-row">
+                <span>KALAN:</span>
+                <span id="kalanTutar">0,00 TL</span>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+            <button type="button" class="btn btn-secondary" onclick="clearForm()">Temizle</button>
+            <button type="button" class="btn btn-primary" onclick="saveTransaction()">Kaydet</button>
+        </div>
     </div>
 
     <script>
-        let transactions = [];
-        let currentFilter = 'all';
-        let currentStatusFilter = 'all';
-        let currentIslemTuru = '';
-        let editingId = null;
+        // Initialize dates
+        document.getElementById('islemTarihi').valueAsDate = new Date();
+        document.getElementById('valorTarihi').valueAsDate = new Date();
 
-        // Örnek kur verileri (gerçek uygulamada API'den gelecek)
-        let currencyRates = {
-            'USD': { rate: 34.25, change: 0.15 },
-            'EUR': { rate: 37.10, change: -0.08 },
-            'GBP': { rate: 43.50, change: 0.22 },
-            'CHF': { rate: 39.80, change: 0.05 }
-        };
-
-        // Müşteri listesi (örnek veriler - gerçek uygulamada API'den gelecek)
-        const customerList = [
-            { name: 'Serkan Yüksel', phone: '0532 123 45 67', lastTransaction: 'USD' },
-            { name: 'Ahmet Demir', phone: '0533 234 56 78', lastTransaction: 'EUR' },
-            { name: 'Mehmet Kaya', phone: '0534 345 67 89', lastTransaction: 'GBP' },
-            { name: 'Ali Yılmaz', phone: '0535 456 78 90', lastTransaction: 'USD' },
-            { name: 'Ayşe Şahin', phone: '0536 567 89 01', lastTransaction: 'EUR' },
-            { name: 'Fatma Çelik', phone: '0537 678 90 12', lastTransaction: 'USD' },
-            { name: 'Zeynep Arslan', phone: '0538 789 01 23', lastTransaction: 'CHF' },
-            { name: 'Elif Öztürk', phone: '0539 890 12 34', lastTransaction: 'USD' },
-            { name: 'Mustafa Aydın', phone: '0541 901 23 45', lastTransaction: 'EUR' },
-            { name: 'Hüseyin Koç', phone: '0542 012 34 56', lastTransaction: 'GBP' },
-            { name: 'İbrahim Güneş', phone: '0543 123 45 67', lastTransaction: 'USD' },
-            { name: 'Murat Yıldız', phone: '0544 234 56 78', lastTransaction: 'SAR' },
-            { name: 'Emre Taş', phone: '0545 345 67 89', lastTransaction: 'AED' },
-            { name: 'Can Polat', phone: '0546 456 78 90', lastTransaction: 'USD' },
-            { name: 'Burak Kara', phone: '0547 567 89 01', lastTransaction: 'EUR' }
-        ];
-
-        let selectedCustomerIndex = -1;
-
-        // Currency selection functions with AUTO-TL LOGIC
-        function selectKaynakDoviz(currency) {
-            // Remove active from all kaynak tags
-            document.querySelectorAll('#kaynakDovizTags .currency-tag').forEach(tag => {
+        // Currency selection
+        function selectCurrency(currency) {
+            // Remove active from all
+            document.querySelectorAll('.currency-tag-small').forEach(tag => {
                 tag.classList.remove('active');
             });
 
-            // Add active to selected tag
-            document.querySelector(`#kaynakDovizTags .currency-tag[data-currency="${currency}"]`).classList.add('active');
+            // Add active to selected
+            document.querySelector(`.currency-tag-small[data-currency="${currency}"]`).classList.add('active');
 
-            // Set hidden input value
-            document.getElementById('kaynakDoviz').value = currency;
+            // Set hidden input
+            document.getElementById('kodu').value = currency;
 
-            // AUTO-TL LOGIC: Eğer TL dışında bir para birimi seçildiyse, hedef para birimini otomatik TL yap
-            if (currency !== 'TL') {
-                selectHedefDoviz('TL');
+            updateCalculation();
+        }
+
+        // Update calculation
+        function updateCalculation() {
+            const kodu = document.getElementById('kodu').value;
+            const miktar = parseFloat(document.getElementById('miktar').value) || 0;
+            const fiyat = parseFloat(document.getElementById('fiyat').value) || 0;
+            const vergi = parseFloat(document.getElementById('vergi').value) || 0;
+
+            if (!kodu || miktar === 0 || fiyat === 0) {
+                document.getElementById('tutar').value = '';
+                document.getElementById('toplamTutar').textContent = '0,00 TL';
+                document.getElementById('islemTutari').textContent = '0,00 TL';
+                calculatePaymentTotal();
+                return;
             }
 
-            updateCalculation();
+            // Calculate: Miktar × Fiyat + Vergi
+            let tutar = (miktar * fiyat) + vergi;
+
+            // Format and display
+            const tutarFormatted = tutar.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('tutar').value = tutarFormatted + ' TL';
+            document.getElementById('toplamTutar').textContent = tutarFormatted + ' TL';
+            document.getElementById('islemTutari').textContent = tutarFormatted + ' TL';
+
+            calculatePaymentTotal();
         }
 
-        function selectHedefDoviz(currency) {
-            // Remove active from all hedef tags
-            document.querySelectorAll('#hedefDovizTags .currency-tag').forEach(tag => {
-                tag.classList.remove('active');
-            });
-
-            // Add active to selected tag
-            document.querySelector(`#hedefDovizTags .currency-tag[data-currency="${currency}"]`).classList.add('active');
-
-            // Set hidden input value
-            document.getElementById('hedefDoviz').value = currency;
-
-            updateCalculation();
+        // Add payment row
+        function addPaymentRow() {
+            const tbody = document.getElementById('paymentBanksBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>
+                    <select class="payment-bank">
+                        <option value="">Banka Seçiniz...</option>
+                        <option value="Denizbank">Denizbank</option>
+                        <option value="İşbankası">İşbankası</option>
+                        <option value="Garanti BBVA">Garanti BBVA</option>
+                        <option value="Yapı Kredi">Yapı Kredi</option>
+                        <option value="Akbank">Akbank</option>
+                        <option value="QNB Finansbank">QNB Finansbank</option>
+                        <option value="Ziraat Bankası">Ziraat Bankası</option>
+                        <option value="Halkbank">Halkbank</option>
+                        <option value="Vakıfbank">Vakıfbank</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="payment-currency">
+                        <option value="TL">TL</option>
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="GBP">GBP</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="number" class="payment-amount" step="0.01" placeholder="0.00" oninput="calculatePaymentTotal()">
+                </td>
+                <td style="text-align: center;">
+                    <button type="button" class="btn-remove" onclick="removePaymentRow(this)">Sil</button>
+                </td>
+            `;
+            tbody.appendChild(newRow);
         }
 
-        // Toggle button işlevi
-        function selectIslemTuru(tur) {
-            currentIslemTuru = tur;
-            // Toggle active classes
-            document.getElementById('btnAlis').classList.remove('active');
-            document.getElementById('btnSatis').classList.remove('active');
-
-            if (tur === 'ALIŞ') {
-                document.getElementById('btnAlis').classList.add('active');
+        // Remove payment row
+        function removePaymentRow(btn) {
+            const tbody = document.getElementById('paymentBanksBody');
+            if (tbody.children.length > 1) {
+                btn.closest('tr').remove();
+                calculatePaymentTotal();
             } else {
-                document.getElementById('btnSatis').classList.add('active');
+                alert('En az bir ödeme hesabı bulunmalıdır!');
             }
         }
 
-        // Initialize
-        document.getElementById('valor').valueAsDate = new Date();
+        // Calculate payment total
+        function calculatePaymentTotal() {
+            let total = 0;
+            document.querySelectorAll('.payment-amount').forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
 
-        // Autocomplete functionality
-        const musteriInput = document.getElementById('musteri');
-        const autocompleteList = document.getElementById('autocompleteList');
+            const islemTutariStr = document.getElementById('islemTutari').textContent.replace(/[^\d,]/g, '').replace(',', '.');
+            const islemTutari = parseFloat(islemTutariStr) || 0;
 
-        musteriInput.addEventListener('input', function() {
-            const value = this.value.toLowerCase().trim();
+            const kalan = islemTutari - total;
 
-            if (value.length === 0) {
-                autocompleteList.classList.remove('active');
-                return;
+            document.getElementById('odemeToplami').textContent = total.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' TL';
+            document.getElementById('kalanTutar').textContent = kalan.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' TL';
+
+            // Color code the remaining amount
+            const kalanElement = document.getElementById('kalanTutar');
+            if (kalan > 0) {
+                kalanElement.style.color = '#ef4444'; // Red if remaining
+            } else if (kalan < 0) {
+                kalanElement.style.color = '#f59e0b'; // Orange if overpaid
+            } else {
+                kalanElement.style.color = '#10b981'; // Green if exact
             }
+        }
 
-            const filtered = customerList.filter(customer =>
-                customer.name.toLowerCase().includes(value) ||
-                customer.phone.includes(value)
-            );
+        // Save transaction
+        function saveTransaction() {
+            const data = {
+                temsilci: document.getElementById('temsilci').value,
+                islemTarihi: document.getElementById('islemTarihi').value,
+                musteriDurum: document.getElementById('musteriDurum').value,
+                unvan: document.getElementById('unvan').value,
+                vergiMuafiyet: document.getElementById('vergiMuafiyet').value,
+                islem: {
+                    tur: document.getElementById('islemTuru').value,
+                    kodu: document.getElementById('kodu').value,
+                    miktar: document.getElementById('miktar').value,
+                    bsmv: document.getElementById('bsmv').value,
+                    fiyat: document.getElementById('fiyat').value,
+                    vergi: document.getElementById('vergi').value,
+                    tutar: document.getElementById('tutar').value,
+                    birim: document.getElementById('birim').value,
+                    valorTarihi: document.getElementById('valorTarihi').value
+                },
+                odemeler: []
+            };
 
-            if (filtered.length === 0) {
-                autocompleteList.classList.remove('active');
-                return;
-            }
+            // Collect payment banks
+            const rows = document.querySelectorAll('#paymentBanksBody tr');
+            rows.forEach(row => {
+                const banka = row.querySelector('.payment-bank').value;
+                const kodu = row.querySelector('.payment-currency').value;
+                const miktar = row.querySelector('.payment-amount').value;
 
-            autocompleteList.innerHTML = filtered.map((customer, index) => `
-                <div class="autocomplete-item" data-index="${index}" data-name="${customer.name}">
-                    <div class="customer-name">${customer.name}</div>
-                    <div class="customer-info">${customer.phone} • Son: ${customer.lastTransaction}</div>
-                </div>
-            `).join('');
-
-            autocompleteList.classList.add('active');
-            selectedCustomerIndex = -1;
-        });
-
-        // Click on autocomplete item
-        autocompleteList.addEventListener('click', function(e) {
-            const item = e.target.closest('.autocomplete-item');
-            if (item) {
-                musteriInput.value = item.dataset.name;
-                autocompleteList.classList.remove('active');
-                document.getElementById('doviz').focus();
-            }
-        });
-
-        // Keyboard navigation
-        musteriInput.addEventListener('keydown', function(e) {
-            const items = autocompleteList.querySelectorAll('.autocomplete-item');
-
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                selectedCustomerIndex = Math.min(selectedCustomerIndex + 1, items.length - 1);
-                updateSelection(items);
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                selectedCustomerIndex = Math.max(selectedCustomerIndex - 1, -1);
-                updateSelection(items);
-            } else if (e.key === 'Enter' && selectedCustomerIndex >= 0) {
-                e.preventDefault();
-                items[selectedCustomerIndex].click();
-            } else if (e.key === 'Escape') {
-                autocompleteList.classList.remove('active');
-            }
-        });
-
-        function updateSelection(items) {
-            items.forEach((item, index) => {
-                if (index === selectedCustomerIndex) {
-                    item.classList.add('selected');
-                    item.scrollIntoView({ block: 'nearest' });
-                } else {
-                    item.classList.remove('selected');
+                if (banka && miktar) {
+                    data.odemeler.push({ banka, kodu, miktar });
                 }
             });
-        }
-
-        // Toggle customer dropdown
-        function toggleCustomerDropdown(e) {
-            e.stopPropagation();
-            const toggleBtn = document.getElementById('dropdownToggle');
-
-            if (autocompleteList.classList.contains('active')) {
-                // Kapat
-                autocompleteList.classList.remove('active');
-                toggleBtn.classList.remove('active');
-            } else {
-                // Aç - tüm müşteri listesini göster
-                showAllCustomers();
-                toggleBtn.classList.add('active');
-            }
-        }
-
-        function showAllCustomers() {
-            autocompleteList.innerHTML = `
-                <div class="autocomplete-list-header">
-                    <span class="autocomplete-list-header-title">Müşteri Listesi</span>
-                    <span class="autocomplete-list-header-count">${customerList.length} kayıt</span>
-                </div>
-            ` + customerList.map((customer, index) => `
-                <div class="autocomplete-item" data-index="${index}" data-name="${customer.name}">
-                    <div class="customer-name">${customer.name}</div>
-                    <div class="customer-info">${customer.phone} • Son İşlem: ${customer.lastTransaction}</div>
-                </div>
-            `).join('');
-
-            autocompleteList.classList.add('active');
-            selectedCustomerIndex = -1;
-        }
-
-        // Close autocomplete when clicking outside
-        document.addEventListener('click', function(e) {
-            const toggleBtn = document.getElementById('dropdownToggle');
-            const autocompleteContainer = document.querySelector('.autocomplete-container');
-
-            if (!autocompleteContainer.contains(e.target)) {
-                autocompleteList.classList.remove('active');
-                toggleBtn.classList.remove('active');
-            }
-        });
-
-        // Auto calculate with currency display
-        function updateCalculation() {
-            const kaynakDoviz = document.getElementById('kaynakDoviz').value;
-            const hedefDoviz = document.getElementById('hedefDoviz').value;
-            const miktar = parseFloat(document.getElementById('miktar').value) || 0;
-            const kur = parseFloat(document.getElementById('kur').value) || 0;
-
-            if (!kaynakDoviz || !hedefDoviz) {
-                document.getElementById('tutarDisplay').innerHTML = '-';
-                return;
-            }
-
-            // Doğru matematiksel hesaplama:
-            // Eğer satılan TL ise böl, değilse çarp
-            const hedefMiktar = kaynakDoviz === 'TL' ? miktar / kur : miktar * kur;
-
-            // Para birimi sembollerini belirle
-            const getCurrencySymbol = (currency) => {
-                const symbols = {
-                    'TL': '₺',
-                    'USD': '$',
-                    'EUR': '€',
-                    'GBP': '£',
-                    'CHF': 'CHF',
-                    'JPY': '¥',
-                    'SAR': 'SAR',
-                    'AED': 'AED'
-                };
-                return symbols[currency] || currency;
-            };
-
-            const kaynakSymbol = getCurrencySymbol(kaynakDoviz);
-            const hedefSymbol = getCurrencySymbol(hedefDoviz);
-
-            // Formatla
-            const formatNumber = (num) => {
-                return new Intl.NumberFormat('tr-TR', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                }).format(num);
-            };
-
-            // Hesaplama metnini oluştur
-            const calculation = `
-                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">
-                    ${formatNumber(miktar)} ${kaynakSymbol} × ${formatNumber(kur)} = ${formatNumber(hedefMiktar)} ${hedefSymbol}
-                </div>
-                <div style="font-size: 24px; font-weight: 700;">
-                    ${formatNumber(hedefMiktar)} ${hedefSymbol}
-                </div>
-            `;
-
-            document.getElementById('tutarDisplay').innerHTML = calculation;
-        }
-
-        function saveTransaction() {
-            const kaynakDoviz = document.getElementById('kaynakDoviz').value;
-            const hedefDoviz = document.getElementById('hedefDoviz').value;
-            const miktar = parseFloat(document.getElementById('miktar').value);
-            const kur = parseFloat(document.getElementById('kur').value);
-
-            // Otomatik durum ataması (backend'den gelecek, şimdilik varsayılan)
-            const autoStatus = 'hazir'; // Gerçek uygulamada API'den gelecek
-
-            const data = {
-                id: editingId || Date.now(),
-                temsilci: 'Çağlar Özyıldırım',
-                musteri: document.getElementById('musteri').value.trim(),
-                islemTuru: currentIslemTuru,
-                valor: document.getElementById('valor').value,
-                kaynakDoviz: kaynakDoviz,
-                hedefDoviz: hedefDoviz,
-                miktar: miktar,
-                kur: kur,
-                hedefMiktar: kaynakDoviz === 'TL' ? miktar / kur : miktar * kur,
-                banka: document.getElementById('banka').value,
-                durum: editingId ? (transactions.find(t => t.id === editingId)?.durum || autoStatus) : autoStatus,
-                notlar: document.getElementById('notlar').value.trim(),
-                timestamp: new Date().toLocaleString('tr-TR')
-            };
 
             // Validation
-            if (!data.musteri || !data.islemTuru || !data.valor || !data.kaynakDoviz || !data.hedefDoviz || !data.miktar || !data.kur) {
-                showToast('Lütfen tüm zorunlu alanları doldurun!', 'error');
+            if (!data.unvan) {
+                alert('Lütfen müşteri unvanını giriniz!');
                 return;
             }
 
-            if (editingId) {
-                const index = transactions.findIndex(t => t.id === editingId);
-                transactions[index] = data;
-                showToast('İşlem güncellendi!', 'success');
-                editingId = null;
-            } else {
-                transactions.unshift(data);
-                showToast('İşlem kaydedildi!', 'success');
+            if (!data.islem.tur || !data.islem.kodu || !data.islem.miktar || !data.islem.fiyat) {
+                alert('Lütfen işlem bilgilerini eksiksiz doldurunuz!');
+                return;
             }
 
-            console.log('Saved:', data);
-            clearForm();
-            renderTransactions();
-            updateStats();
+            if (data.odemeler.length === 0) {
+                alert('Lütfen en az bir ödeme hesabı ekleyiniz!');
+                return;
+            }
+
+            // Check if payment total matches transaction total
+            const kalanStr = document.getElementById('kalanTutar').textContent.replace(/[^\d,-]/g, '').replace(',', '.');
+            const kalan = parseFloat(kalanStr) || 0;
+
+            if (Math.abs(kalan) > 0.01) {
+                const confirm = window.confirm(`Ödeme toplamı işlem tutarıyla eşleşmiyor. Kalan: ${document.getElementById('kalanTutar').textContent}\n\nYine de kaydetmek istiyor musunuz?`);
+                if (!confirm) return;
+            }
+
+            console.log('Transaction Data:', data);
+            alert('İşlem başarıyla kaydedildi!');
+
+            // In real app, send to backend
+            // await fetch('/api/transactions', { method: 'POST', body: JSON.stringify(data) });
         }
 
+        // Clear form
         function clearForm() {
-            document.getElementById('musteri').value = '';
-            document.getElementById('valor').valueAsDate = new Date();
-            document.getElementById('kaynakDoviz').value = '';
-            document.getElementById('hedefDoviz').value = '';
+            if (!confirm('Formu temizlemek istediğinize emin misiniz?')) return;
+
+            document.getElementById('musteriDurum').value = '';
+            document.getElementById('unvan').value = '';
+            document.getElementById('vergiMuafiyet').value = 'YOK';
+            document.getElementById('islemTuru').value = '';
+            document.getElementById('kodu').value = '';
             document.getElementById('miktar').value = '';
-            document.getElementById('kur').value = '';
-            document.getElementById('banka').value = '';
-            document.getElementById('notlar').value = '';
-            document.getElementById('tutarDisplay').innerHTML = '-';
+            document.getElementById('bsmv').value = 'YOK';
+            document.getElementById('fiyat').value = '';
+            document.getElementById('vergi').value = '0.00';
+            document.getElementById('tutar').value = '';
+            document.getElementById('birim').value = '';
+            document.getElementById('valorTarihi').valueAsDate = new Date();
 
-            // Toggle buttonları temizle
-            currentIslemTuru = '';
-            document.getElementById('btnAlis').classList.remove('active');
-            document.getElementById('btnSatis').classList.remove('active');
-
-            // Currency tag'leri temizle
-            document.querySelectorAll('.currency-tag').forEach(tag => {
+            // Clear currency selection
+            document.querySelectorAll('.currency-tag-small').forEach(tag => {
                 tag.classList.remove('active');
             });
 
-            editingId = null;
-            document.getElementById('musteri').focus();
-        }
-
-        function editTransaction(id) {
-            const transaction = transactions.find(t => t.id === id);
-            if (!transaction) return;
-
-            editingId = id;
-            document.getElementById('musteri').value = transaction.musteri;
-            document.getElementById('valor').value = transaction.valor;
-            selectKaynakDoviz(transaction.kaynakDoviz);
-            selectHedefDoviz(transaction.hedefDoviz);
-            document.getElementById('miktar').value = transaction.miktar;
-            document.getElementById('kur').value = transaction.kur;
-            document.getElementById('banka').value = transaction.banka;
-            document.getElementById('notlar').value = transaction.notlar || '';
-
-            // İşlem türünü yükle
-            if (transaction.islemTuru) {
-                selectIslemTuru(transaction.islemTuru);
-            }
+            // Reset payment banks to single row
+            const tbody = document.getElementById('paymentBanksBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td>
+                        <select class="payment-bank">
+                            <option value="">Banka Seçiniz...</option>
+                            <option value="Denizbank">Denizbank</option>
+                            <option value="İşbankası">İşbankası</option>
+                            <option value="Garanti BBVA">Garanti BBVA</option>
+                            <option value="Yapı Kredi">Yapı Kredi</option>
+                            <option value="Akbank">Akbank</option>
+                            <option value="QNB Finansbank">QNB Finansbank</option>
+                            <option value="Ziraat Bankası">Ziraat Bankası</option>
+                            <option value="Halkbank">Halkbank</option>
+                            <option value="Vakıfbank">Vakıfbank</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="payment-currency">
+                            <option value="TL">TL</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="payment-amount" step="0.01" placeholder="0.00" oninput="calculatePaymentTotal()">
+                    </td>
+                    <td style="text-align: center;">
+                        <button type="button" class="btn-remove" onclick="removePaymentRow(this)">Sil</button>
+                    </td>
+                </tr>
+            `;
 
             updateCalculation();
-
-            document.getElementById('musteri').focus();
-            showToast('Düzenleme moduna geçildi', 'success');
         }
-
-        function deleteTransaction(id) {
-            if (confirm('Bu işlemi silmek istediğinize emin misiniz?')) {
-                transactions = transactions.filter(t => t.id !== id);
-                renderTransactions();
-                updateStats();
-                showToast('İşlem silindi', 'success');
-            }
-        }
-
-        function filterTransactions(type) {
-            currentFilter = type;
-            document.querySelectorAll('.filter-btn[data-filter-type="transaction"]').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            renderTransactions();
-        }
-
-        function filterByStatus(status) {
-            currentStatusFilter = status;
-            document.querySelectorAll('.filter-btn[data-filter-type="status"]').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            renderTransactions();
-        }
-
-        function renderTransactions() {
-            const container = document.getElementById('transactionList');
-
-            // İşlem türüne göre filtrele
-            let filtered = currentFilter === 'all'
-                ? transactions
-                : currentFilter === 'ALIŞ'
-                    ? transactions.filter(t => t.islemTuru === 'ALIŞ')
-                    : transactions.filter(t => t.islemTuru === 'SATIŞ');
-
-            // Duruma göre filtrele
-            if (currentStatusFilter !== 'all') {
-                filtered = filtered.filter(t => (t.durum || 'hazir') === currentStatusFilter);
-            }
-
-            if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        <h3>Henüz işlem yok</h3>
-                        <p>Sol panelden hızlıca işlem ekleyebilirsiniz</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = filtered.map(t => {
-                const getCurrencySymbol = (currency) => {
-                    const symbols = { 'TL': '₺', 'USD': '$', 'EUR': '€', 'GBP': '£', 'CHF': 'CHF', 'JPY': '¥', 'SAR': 'SAR', 'AED': 'AED' };
-                    return symbols[currency] || currency;
-                };
-
-                // Status text mapping
-                const statusText = {
-                    'hazir': 'Ödeme İçin Hazır',
-                    'bekliyor': 'Ödeme Bekleniyor',
-                    'eslesmeyen': 'Eşleşmeyen Banka Transferleri',
-                    'onay-bekliyor': 'Ödeme Onayı Bekleniyor',
-                    'tamamlandi': 'Tamamlandı',
-                    'iptal': 'İptal Edildi'
-                };
-
-                const cardClass = t.islemTuru === 'SATIŞ' ? 'satis' : 'alis';
-                const typeClass = t.islemTuru === 'SATIŞ' ? 'satis' : 'alis';
-
-                return `
-                <div class="transaction-card ${cardClass}">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-customer">${t.musteri}</div>
-                            <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">
-                                📅 ${t.timestamp}
-                            </div>
-                        </div>
-                        <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
-                            <div class="card-type ${typeClass}">
-                                ${t.kaynakDoviz} → ${t.hedefDoviz}
-                            </div>
-                            <span class="status-badge ${t.durum || 'hazir'}">${statusText[t.durum || 'hazir']}</span>
-                        </div>
-                    </div>
-                    <div class="card-details">
-                        <div class="detail-item">
-                            <div class="detail-label">Temsilci</div>
-                            <div class="detail-value">${t.temsilci.split(' ')[0]}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Satılan</div>
-                            <div class="detail-value">${t.miktar.toLocaleString('tr-TR', {minimumFractionDigits: 2})} ${getCurrencySymbol(t.kaynakDoviz)}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Kur</div>
-                            <div class="detail-value">${t.kur.toFixed(4)}</div>
-                        </div>
-                    </div>
-                    ${t.notlar ? `<div class="card-note">📝 ${t.notlar}</div>` : ''}
-                    <div class="card-footer">
-                        <div class="card-amount">
-                            ${t.hedefMiktar.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${getCurrencySymbol(t.hedefDoviz)}
-                        </div>
-                        <div class="card-actions">
-                            <button class="icon-btn edit" onclick="editTransaction(${t.id})" title="Düzenle">
-                                ✏️
-                            </button>
-                            <button class="icon-btn delete" onclick="deleteTransaction(${t.id})" title="Sil">
-                                🗑️
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            }).join('');
-        }
-
-        function updateStats() {
-            const total = transactions.length;
-            const tlSatis = transactions.filter(t => t.islemTuru === 'SATIŞ').length;
-            const dovizAlis = transactions.filter(t => t.islemTuru === 'ALIŞ').length;
-
-            // TL bazlı toplam işlem hacmini hesapla (tüm işlemlerin hedef miktarlarını topla)
-            const tlAmount = transactions.reduce((sum, t) => {
-                // Hedef döviz TL ise, o tutarı topla
-                if (t.hedefDoviz === 'TL') {
-                    return sum + t.hedefMiktar;
-                }
-                // Kaynak döviz TL ise, o tutarı topla
-                if (t.kaynakDoviz === 'TL') {
-                    return sum + t.miktar;
-                }
-                return sum;
-            }, 0);
-
-            document.getElementById('totalTransactions').textContent = total;
-            document.getElementById('statTotal').textContent = total;
-            document.getElementById('statAlis').textContent = dovizAlis;
-            document.getElementById('statSatis').textContent = tlSatis;
-            document.getElementById('statAmount').textContent =
-                new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(tlAmount) + ' ₺';
-
-            // Update FAB badge
-            document.getElementById('fabBadge').textContent = total;
-        }
-
-        function sendToBank() {
-            if (transactions.length === 0) {
-                showToast('Gönderilecek işlem bulunmuyor!', 'error');
-                return;
-            }
-
-            const confirmed = confirm(`${transactions.length} adet işlemi bankaya göndermek istediğinize emin misiniz?`);
-
-            if (confirmed) {
-                // Burada gerçek uygulamada API çağrısı yapılacak
-                console.log('Bankaya gönderilen işlemler:', transactions);
-
-                showToast(`${transactions.length} işlem başarıyla bankaya gönderildi!`, 'success');
-
-                // İşlemler gönderildikten sonra listeyi temizle
-                // transactions = [];
-                // renderTransactions();
-                // updateStats();
-            }
-        }
-
-        function showToast(message, type) {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toastMessage');
-
-            toast.className = `toast ${type}`;
-            toastMessage.textContent = message;
-            toast.style.display = 'flex';
-
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 3000);
-        }
-
-        // Currency Functions
-        function applyCurrencyRate(code, rate) {
-            const kaynakDoviz = document.getElementById('kaynakDoviz').value;
-            const hedefDoviz = document.getElementById('hedefDoviz').value;
-
-            // Eğer işlem türü seçilmediyse uyarı ver
-            if (!currentIslemTuru) {
-                showToast('Lütfen önce işlem türünü seçin (Döviz Alış/Satış)', 'error');
-                return;
-            }
-
-            // Tıklanan kur, kaynak veya hedef para birimlerinden biriyle eşleşiyorsa kuru doldur
-            // (TL hariç - TL için kur bilgisi olmaz)
-            if (code !== 'TL' && (kaynakDoviz === code || hedefDoviz === code)) {
-                document.getElementById('kur').value = rate.toFixed(4);
-                updateCalculation();
-                showToast(`${code} kuru otomatik dolduruldu!`, 'success');
-            }
-        }
-
-        function renderCurrencies() {
-            const grid = document.getElementById('currencyGrid');
-            grid.innerHTML = Object.entries(currencyRates).map(([code, data]) => {
-                const changeClass = data.change >= 0 ? 'up' : 'down';
-                const changeSymbol = data.change >= 0 ? '↑' : '↓';
-                return `
-                    <div class="currency-item" onclick="applyCurrencyRate('${code}', ${data.rate})">
-                        <div class="currency-code">${code}</div>
-                        <div>
-                            <span class="currency-rate">${data.rate.toFixed(2)}</span>
-                            <span class="currency-change ${changeClass}">${changeSymbol} ${Math.abs(data.change).toFixed(2)}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function refreshCurrencies() {
-            // Gerçek uygulamada API'den gelecek
-            Object.keys(currencyRates).forEach(code => {
-                const change = (Math.random() - 0.5) * 0.5;
-                currencyRates[code].rate += change;
-                currencyRates[code].change = change;
-            });
-            renderCurrencies();
-            showToast('Kurlar güncellendi!', 'success');
-        }
-
-        // Initialize on load
-        renderCurrencies();
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
-                saveTransaction();
-            }
-            if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
-                e.preventDefault();
-                clearForm();
-            }
-        });
     </script>
 </body>
 </html>
