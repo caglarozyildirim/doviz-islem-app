@@ -718,10 +718,7 @@
 
                 <div class="field-group" style="margin-bottom: 20px;">
                     <div class="field-label">VERGİ MUAFİYET</div>
-                    <select class="field-value" id="vergiMuafiyet">
-                        <option value="YOK">Yok</option>
-                        <option value="VAR">Var</option>
-                    </select>
+                    <input type="text" class="field-value readonly" id="vergiMuafiyet" value="Yok" readonly>
                 </div>
 
                 <!-- Exchange Rates Section - NEW -->
@@ -901,9 +898,19 @@
                 </div>
 
                 <div class="history-filters">
-                    <button class="filter-btn active" onclick="filterTransactions('Tümü')">Tümü</button>
-                    <button class="filter-btn" onclick="filterTransactions('ALIŞ')">Alış</button>
-                    <button class="filter-btn" onclick="filterTransactions('SATIŞ')">Satış</button>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; width: 100%;">
+                        <span style="font-size: 11px; font-weight: 600; color: #64748b;">Durum Filtresi:</span>
+                        <button class="filter-btn active" data-filter-type="durum" onclick="filterByDurum('Tümü')">Tümü</button>
+                        <button class="filter-btn" data-filter-type="durum" onclick="filterByDurum('Ödeme Hazır')">Ödeme Hazır</button>
+                        <button class="filter-btn" data-filter-type="durum" onclick="filterByDurum('Ödeme Bekliyor')">Ödeme Bekliyor</button>
+                        <button class="filter-btn" data-filter-type="durum" onclick="filterByDurum('Eşleşmeyen')">Eşleşmeyen</button>
+                        <button class="filter-btn" data-filter-type="durum" onclick="filterByDurum('Onay Bekliyor')">Onay Bekliyor</button>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; width: 100%;">
+                        <button class="filter-btn active" data-filter-type="islem" onclick="filterTransactions('Tümü')">Tümü</button>
+                        <button class="filter-btn" data-filter-type="islem" onclick="filterTransactions('ALIŞ')">Alış</button>
+                        <button class="filter-btn" data-filter-type="islem" onclick="filterTransactions('SATIŞ')">Satış</button>
+                    </div>
                 </div>
 
                 <div class="transaction-list" id="transactionList">
@@ -955,6 +962,7 @@
         let selectedCustomer = null;
         let transactions = [];
         let currentFilter = 'Tümü';
+        let currentDurumFilter = 'Tümü';
 
         // Initialize dates
         document.getElementById('islemTarihi').valueAsDate = new Date();
@@ -1000,7 +1008,8 @@
             durumBadge.textContent = customer.status;
 
             // Update Vergi Muafiyet - Auto-fill based on customer
-            document.getElementById('vergiMuafiyet').value = customer.vergiMuafiyet;
+            // Display as "Var" or "Yok" instead of "VAR" or "YOK"
+            document.getElementById('vergiMuafiyet').value = customer.vergiMuafiyet === 'VAR' ? 'Var' : 'Yok';
 
             // Update BSMV based on Vergi Muafiyet
             // Vergi Muafiyet VAR → BSMV YOK
@@ -1298,6 +1307,7 @@
                 islemTarihi: document.getElementById('islemTarihi').value,
                 musteri: selectedCustomer,
                 vergiMuafiyet: document.getElementById('vergiMuafiyet').value,
+                durum: 'Ödeme Hazır', // Default status for new transactions
                 islem: {
                     tur: document.getElementById('islemTuru').value,
                     kodu: document.getElementById('kodu').value,
@@ -1366,9 +1376,19 @@
         // Render transactions in history panel
         function renderTransactions() {
             const listElement = document.getElementById('transactionList');
-            const filtered = currentFilter === 'Tümü'
-                ? transactions
-                : transactions.filter(t => t.islem.tur === currentFilter);
+
+            // Filter by both transaction type AND durum
+            let filtered = transactions;
+
+            // Filter by transaction type (ALIŞ/SATIŞ)
+            if (currentFilter !== 'Tümü') {
+                filtered = filtered.filter(t => t.islem.tur === currentFilter);
+            }
+
+            // Filter by durum (status)
+            if (currentDurumFilter !== 'Tümü') {
+                filtered = filtered.filter(t => t.durum === currentDurumFilter);
+            }
 
             if (filtered.length === 0) {
                 listElement.innerHTML = `
@@ -1411,11 +1431,25 @@
             document.getElementById('transactionCount').textContent = filtered.length;
         }
 
-        // Filter transactions
+        // Filter transactions by type (ALIŞ/SATIŞ)
         function filterTransactions(filter) {
             currentFilter = filter;
 
-            document.querySelectorAll('.filter-btn').forEach(btn => {
+            // Remove active from all islem filter buttons
+            document.querySelectorAll('.filter-btn[data-filter-type="islem"]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            renderTransactions();
+        }
+
+        // Filter transactions by durum (status)
+        function filterByDurum(durum) {
+            currentDurumFilter = durum;
+
+            // Remove active from all durum filter buttons
+            document.querySelectorAll('.filter-btn[data-filter-type="durum"]').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
