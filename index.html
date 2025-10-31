@@ -68,6 +68,70 @@
             border-color: #667eea;
         }
 
+        .field-value.readonly {
+            background: #f0f0f0;
+            cursor: not-allowed;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .status-badge.aktif {
+            background: #d1fae5;
+            color: #047857;
+        }
+
+        .status-badge.pasif {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .autocomplete-container {
+            position: relative;
+            flex: 1;
+        }
+
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #667eea;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .autocomplete-list.active {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .autocomplete-item:hover {
+            background: #f8fafc;
+        }
+
+        .autocomplete-item.selected {
+            background: #eff6ff;
+            color: #667eea;
+            font-weight: 600;
+        }
+
         .info-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -118,6 +182,45 @@
         td input:focus, td select:focus {
             outline: none;
             border-color: #667eea;
+        }
+
+        .islem-tag-cell {
+            display: flex;
+            gap: 6px;
+            padding: 4px;
+        }
+
+        .islem-tag {
+            flex: 1;
+            padding: 8px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .islem-tag.alis {
+            color: #059669;
+        }
+
+        .islem-tag.alis.active {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+
+        .islem-tag.satis {
+            color: #dc2626;
+        }
+
+        .islem-tag.satis.active {
+            background: #ef4444;
+            border-color: #ef4444;
+            color: white;
         }
 
         .currency-tag-cell {
@@ -268,7 +371,7 @@
             <div class="header-left">
                 <div class="field-group">
                     <div class="field-label">Müşteri Temsilcisi</div>
-                    <input type="text" class="field-value" id="temsilci" value="Ümit AKYÜZ" readonly>
+                    <input type="text" class="field-value readonly" id="temsilci" value="Ümit AKYÜZ" readonly>
                 </div>
                 <div class="field-group">
                     <div class="field-label">İşlem Tarihi</div>
@@ -278,7 +381,9 @@
             <div class="header-right">
                 <div class="field-group">
                     <div class="field-label">MÜŞTERİ DURUM</div>
-                    <input type="text" class="field-value" id="musteriDurum" placeholder="Müşteri durum bilgisi...">
+                    <div class="field-value readonly" id="musteriDurum" style="background: #f0f0f0; display: flex; align-items: center;">
+                        <span id="durumBadge">Müşteri seçiniz</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -287,7 +392,10 @@
         <div class="info-row">
             <div class="field-group">
                 <div class="field-label">UNVAN</div>
-                <input type="text" class="field-value" id="unvan" placeholder="Müşteri unvanı...">
+                <div class="autocomplete-container">
+                    <input type="text" class="field-value" id="unvan" placeholder="Müşteri aratın..." autocomplete="off" oninput="filterCustomers()" onfocus="showCustomerList()">
+                    <div class="autocomplete-list" id="customerList"></div>
+                </div>
             </div>
             <div class="field-group">
                 <div class="field-label">VERGİ MUAFİYET</div>
@@ -304,7 +412,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 80px;">İşlem</th>
+                        <th style="width: 140px;">İşlem</th>
                         <th style="width: 100px;">Kodu</th>
                         <th style="width: 120px;">Miktar</th>
                         <th style="width: 80px;">BSMV</th>
@@ -318,11 +426,11 @@
                 <tbody>
                     <tr>
                         <td>
-                            <select id="islemTuru" onchange="updateCalculation()">
-                                <option value="">Seç</option>
-                                <option value="ALIŞ">ALIŞ</option>
-                                <option value="SATIŞ">SATIŞ</option>
-                            </select>
+                            <div class="islem-tag-cell">
+                                <button type="button" class="islem-tag alis" onclick="selectIslemTuru('ALIŞ')">ALIŞ</button>
+                                <button type="button" class="islem-tag satis" onclick="selectIslemTuru('SATIŞ')">SATIŞ</button>
+                            </div>
+                            <input type="hidden" id="islemTuru" value="">
                         </td>
                         <td>
                             <div class="currency-tag-cell">
@@ -337,22 +445,19 @@
                             <input type="number" id="miktar" step="0.01" placeholder="0.00" oninput="updateCalculation()">
                         </td>
                         <td>
-                            <select id="bsmv">
-                                <option value="YOK">YOK</option>
-                                <option value="VAR">VAR</option>
-                            </select>
+                            <input type="text" id="bsmv" readonly style="background: #f0f0f0; text-align: center;" value="YOK">
                         </td>
                         <td>
                             <input type="number" id="fiyat" step="0.0001" placeholder="0.0000" oninput="updateCalculation()">
                         </td>
                         <td>
-                            <input type="number" id="vergi" step="0.01" placeholder="0.00" value="0.00">
+                            <input type="number" id="vergi" readonly step="0.01" placeholder="0.00" value="0.00" style="background: #f0f0f0;">
                         </td>
                         <td>
                             <input type="text" id="tutar" readonly style="background: #f0f0f0; font-weight: bold;">
                         </td>
                         <td>
-                            <input type="text" id="birim" placeholder="">
+                            <input type="text" id="birim" value="TL">
                         </td>
                         <td>
                             <input type="date" id="valorTarihi">
@@ -374,7 +479,7 @@
             <table id="paymentBanksTable">
                 <thead>
                     <tr>
-                        <th style="width: 250px;">Ödeme Banka</th>
+                        <th style="width: 350px;">Ödeme Banka - IBAN</th>
                         <th style="width: 100px;">Kodu</th>
                         <th style="width: 150px;">Miktar</th>
                         <th style="width: 80px;">İşlem</th>
@@ -383,17 +488,17 @@
                 <tbody id="paymentBanksBody">
                     <tr>
                         <td>
-                            <select class="payment-bank">
+                            <select class="payment-bank" onchange="updatePaymentCurrency(this)">
                                 <option value="">Banka Seçiniz...</option>
-                                <option value="Denizbank">Denizbank</option>
-                                <option value="İşbankası">İşbankası</option>
-                                <option value="Garanti BBVA">Garanti BBVA</option>
-                                <option value="Yapı Kredi">Yapı Kredi</option>
-                                <option value="Akbank">Akbank</option>
-                                <option value="QNB Finansbank">QNB Finansbank</option>
-                                <option value="Ziraat Bankası">Ziraat Bankası</option>
-                                <option value="Halkbank">Halkbank</option>
-                                <option value="Vakıfbank">Vakıfbank</option>
+                                <option value="Denizbank - TR33 0012 3456 7890 1234 5678 90">Denizbank - TR33 0012 3456 7890 1234 5678 90</option>
+                                <option value="İşbankası - TR44 0006 4000 0011 2345 6789 01">İşbankası - TR44 0006 4000 0011 2345 6789 01</option>
+                                <option value="Garanti BBVA - TR55 0006 2000 0550 0006 2958 47">Garanti BBVA - TR55 0006 2000 0550 0006 2958 47</option>
+                                <option value="Yapı Kredi - TR76 0006 7010 0000 0012 3456 78">Yapı Kredi - TR76 0006 7010 0000 0012 3456 78</option>
+                                <option value="Akbank - TR98 0004 6006 0888 8000 1234 56">Akbank - TR98 0004 6006 0888 8000 1234 56</option>
+                                <option value="QNB Finansbank - TR12 0011 1000 0000 0123 4567 89">QNB Finansbank - TR12 0011 1000 0000 0123 4567 89</option>
+                                <option value="Ziraat Bankası - TR44 0001 0001 7845 6789 3050 01">Ziraat Bankası - TR44 0001 0001 7845 6789 3050 01</option>
+                                <option value="Halkbank - TR66 0001 2009 4520 0016 0000 01">Halkbank - TR66 0001 2009 4520 0016 0000 01</option>
+                                <option value="Vakıfbank - TR88 0001 5001 5800 7289 1234 56">Vakıfbank - TR88 0001 5001 5800 7289 1234 56</option>
                             </select>
                         </td>
                         <td>
@@ -440,34 +545,118 @@
     </div>
 
     <script>
+        // Customer database with status and BSMV info
+        const customers = [
+            { name: 'Mehmet GÖR', status: 'Aktif', bsmv: 'YOK' },
+            { name: 'Serkan Yüksel', status: 'Aktif', bsmv: 'VAR' },
+            { name: 'Ahmet Demir', status: 'Pasif', bsmv: 'VAR' },
+            { name: 'Ali Yılmaz', status: 'Aktif', bsmv: 'YOK' },
+            { name: 'Ayşe Şahin', status: 'Aktif', bsmv: 'VAR' },
+            { name: 'Fatma Çelik', status: 'Aktif', bsmv: 'YOK' },
+            { name: 'Zeynep Arslan', status: 'Pasif', bsmv: 'VAR' },
+            { name: 'Elif Öztürk', status: 'Aktif', bsmv: 'YOK' },
+            { name: 'Mustafa Aydın', status: 'Aktif', bsmv: 'VAR' },
+            { name: 'Hüseyin Koç', status: 'Aktif', bsmv: 'YOK' }
+        ];
+
+        let selectedCustomer = null;
+
         // Initialize dates
         document.getElementById('islemTarihi').valueAsDate = new Date();
         document.getElementById('valorTarihi').valueAsDate = new Date();
 
+        // Customer autocomplete functions
+        function showCustomerList() {
+            filterCustomers();
+        }
+
+        function filterCustomers() {
+            const searchValue = document.getElementById('unvan').value.toLowerCase();
+            const customerList = document.getElementById('customerList');
+
+            const filtered = customers.filter(c =>
+                c.name.toLowerCase().includes(searchValue)
+            );
+
+            if (filtered.length === 0) {
+                customerList.classList.remove('active');
+                return;
+            }
+
+            customerList.innerHTML = filtered.map(customer => `
+                <div class="autocomplete-item" onclick="selectCustomer('${customer.name}')">
+                    ${customer.name}
+                </div>
+            `).join('');
+
+            customerList.classList.add('active');
+        }
+
+        function selectCustomer(name) {
+            const customer = customers.find(c => c.name === name);
+            if (!customer) return;
+
+            selectedCustomer = customer;
+            document.getElementById('unvan').value = customer.name;
+
+            // Update status badge
+            const durumBadge = document.getElementById('durumBadge');
+            durumBadge.className = 'status-badge ' + customer.status.toLowerCase();
+            durumBadge.textContent = customer.status;
+
+            // Update BSMV
+            document.getElementById('bsmv').value = customer.bsmv;
+
+            // Hide autocomplete
+            document.getElementById('customerList').classList.remove('active');
+
+            // Recalculate if there's data
+            updateCalculation();
+        }
+
+        // Close autocomplete when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.autocomplete-container')) {
+                document.getElementById('customerList').classList.remove('active');
+            }
+        });
+
+        // Transaction type selection (tags)
+        function selectIslemTuru(tur) {
+            document.querySelectorAll('.islem-tag').forEach(tag => {
+                tag.classList.remove('active');
+            });
+
+            if (tur === 'ALIŞ') {
+                document.querySelector('.islem-tag.alis').classList.add('active');
+            } else {
+                document.querySelector('.islem-tag.satis').classList.add('active');
+            }
+
+            document.getElementById('islemTuru').value = tur;
+        }
+
         // Currency selection
         function selectCurrency(currency) {
-            // Remove active from all
             document.querySelectorAll('.currency-tag-small').forEach(tag => {
                 tag.classList.remove('active');
             });
 
-            // Add active to selected
             document.querySelector(`.currency-tag-small[data-currency="${currency}"]`).classList.add('active');
-
-            // Set hidden input
             document.getElementById('kodu').value = currency;
 
             updateCalculation();
         }
 
-        // Update calculation
+        // Update calculation with automatic tax (binde 2 if BSMV is VAR)
         function updateCalculation() {
             const kodu = document.getElementById('kodu').value;
             const miktar = parseFloat(document.getElementById('miktar').value) || 0;
             const fiyat = parseFloat(document.getElementById('fiyat').value) || 0;
-            const vergi = parseFloat(document.getElementById('vergi').value) || 0;
+            const bsmv = document.getElementById('bsmv').value;
 
             if (!kodu || miktar === 0 || fiyat === 0) {
+                document.getElementById('vergi').value = '0.00';
                 document.getElementById('tutar').value = '';
                 document.getElementById('toplamTutar').textContent = '0,00 TL';
                 document.getElementById('islemTutari').textContent = '0,00 TL';
@@ -475,10 +664,20 @@
                 return;
             }
 
-            // Calculate: Miktar × Fiyat + Vergi
-            let tutar = (miktar * fiyat) + vergi;
+            // Calculate base amount
+            const baseAmount = miktar * fiyat;
 
-            // Format and display
+            // Calculate tax (binde 2 = 0.002 if BSMV is VAR)
+            let vergi = 0;
+            if (bsmv === 'VAR') {
+                vergi = baseAmount * 0.002; // %0.2 = binde 2
+            }
+
+            // Total
+            const tutar = baseAmount + vergi;
+
+            // Update displays
+            document.getElementById('vergi').value = vergi.toFixed(2);
             const tutarFormatted = tutar.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             document.getElementById('tutar').value = tutarFormatted + ' TL';
             document.getElementById('toplamTutar').textContent = tutarFormatted + ' TL';
@@ -487,23 +686,31 @@
             calculatePaymentTotal();
         }
 
-        // Add payment row
+        // Add payment row with remaining amount limit
         function addPaymentRow() {
+            const kalanStr = document.getElementById('kalanTutar').textContent.replace(/[^\d,]/g, '').replace(',', '.');
+            const kalan = parseFloat(kalanStr) || 0;
+
+            if (kalan <= 0) {
+                alert('Kalan tutar yok! Yeni ödeme kalemi eklenemez.');
+                return;
+            }
+
             const tbody = document.getElementById('paymentBanksBody');
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
                 <td>
-                    <select class="payment-bank">
+                    <select class="payment-bank" onchange="updatePaymentCurrency(this)">
                         <option value="">Banka Seçiniz...</option>
-                        <option value="Denizbank">Denizbank</option>
-                        <option value="İşbankası">İşbankası</option>
-                        <option value="Garanti BBVA">Garanti BBVA</option>
-                        <option value="Yapı Kredi">Yapı Kredi</option>
-                        <option value="Akbank">Akbank</option>
-                        <option value="QNB Finansbank">QNB Finansbank</option>
-                        <option value="Ziraat Bankası">Ziraat Bankası</option>
-                        <option value="Halkbank">Halkbank</option>
-                        <option value="Vakıfbank">Vakıfbank</option>
+                        <option value="Denizbank - TR33 0012 3456 7890 1234 5678 90">Denizbank - TR33 0012 3456 7890 1234 5678 90</option>
+                        <option value="İşbankası - TR44 0006 4000 0011 2345 6789 01">İşbankası - TR44 0006 4000 0011 2345 6789 01</option>
+                        <option value="Garanti BBVA - TR55 0006 2000 0550 0006 2958 47">Garanti BBVA - TR55 0006 2000 0550 0006 2958 47</option>
+                        <option value="Yapı Kredi - TR76 0006 7010 0000 0012 3456 78">Yapı Kredi - TR76 0006 7010 0000 0012 3456 78</option>
+                        <option value="Akbank - TR98 0004 6006 0888 8000 1234 56">Akbank - TR98 0004 6006 0888 8000 1234 56</option>
+                        <option value="QNB Finansbank - TR12 0011 1000 0000 0123 4567 89">QNB Finansbank - TR12 0011 1000 0000 0123 4567 89</option>
+                        <option value="Ziraat Bankası - TR44 0001 0001 7845 6789 3050 01">Ziraat Bankası - TR44 0001 0001 7845 6789 3050 01</option>
+                        <option value="Halkbank - TR66 0001 2009 4520 0016 0000 01">Halkbank - TR66 0001 2009 4520 0016 0000 01</option>
+                        <option value="Vakıfbank - TR88 0001 5001 5800 7289 1234 56">Vakıfbank - TR88 0001 5001 5800 7289 1234 56</option>
                     </select>
                 </td>
                 <td>
@@ -515,13 +722,42 @@
                     </select>
                 </td>
                 <td>
-                    <input type="number" class="payment-amount" step="0.01" placeholder="0.00" oninput="calculatePaymentTotal()">
+                    <input type="number" class="payment-amount" step="0.01" placeholder="0.00" max="${kalan.toFixed(2)}" oninput="limitPaymentAmount(this); calculatePaymentTotal()">
                 </td>
                 <td style="text-align: center;">
                     <button type="button" class="btn-remove" onclick="removePaymentRow(this)">Sil</button>
                 </td>
             `;
             tbody.appendChild(newRow);
+        }
+
+        // Limit payment amount to remaining total
+        function limitPaymentAmount(input) {
+            const kalanStr = document.getElementById('kalanTutar').textContent.replace(/[^\d,]/g, '').replace(',', '.');
+            const kalan = parseFloat(kalanStr) || 0;
+            const currentTotal = parseFloat(input.value) || 0;
+
+            // Get total of OTHER payment inputs
+            let otherPaymentsTotal = 0;
+            document.querySelectorAll('.payment-amount').forEach(other => {
+                if (other !== input) {
+                    otherPaymentsTotal += parseFloat(other.value) || 0;
+                }
+            });
+
+            const islemTutariStr = document.getElementById('islemTutari').textContent.replace(/[^\d,]/g, '').replace(',', '.');
+            const islemTutari = parseFloat(islemTutariStr) || 0;
+
+            const maxAllowed = islemTutari - otherPaymentsTotal;
+
+            if (currentTotal > maxAllowed) {
+                input.value = maxAllowed.toFixed(2);
+            }
+        }
+
+        // Update payment currency based on bank selection (optional feature)
+        function updatePaymentCurrency(selectElement) {
+            // You can add logic here if needed
         }
 
         // Remove payment row
@@ -552,9 +788,9 @@
 
             // Color code the remaining amount
             const kalanElement = document.getElementById('kalanTutar');
-            if (kalan > 0) {
+            if (kalan > 0.01) {
                 kalanElement.style.color = '#ef4444'; // Red if remaining
-            } else if (kalan < 0) {
+            } else if (kalan < -0.01) {
                 kalanElement.style.color = '#f59e0b'; // Orange if overpaid
             } else {
                 kalanElement.style.color = '#10b981'; // Green if exact
@@ -566,8 +802,7 @@
             const data = {
                 temsilci: document.getElementById('temsilci').value,
                 islemTarihi: document.getElementById('islemTarihi').value,
-                musteriDurum: document.getElementById('musteriDurum').value,
-                unvan: document.getElementById('unvan').value,
+                musteri: selectedCustomer,
                 vergiMuafiyet: document.getElementById('vergiMuafiyet').value,
                 islem: {
                     tur: document.getElementById('islemTuru').value,
@@ -596,8 +831,8 @@
             });
 
             // Validation
-            if (!data.unvan) {
-                alert('Lütfen müşteri unvanını giriniz!');
+            if (!selectedCustomer) {
+                alert('Lütfen müşteri seçiniz!');
                 return;
             }
 
@@ -616,23 +851,22 @@
             const kalan = parseFloat(kalanStr) || 0;
 
             if (Math.abs(kalan) > 0.01) {
-                const confirm = window.confirm(`Ödeme toplamı işlem tutarıyla eşleşmiyor. Kalan: ${document.getElementById('kalanTutar').textContent}\n\nYine de kaydetmek istiyor musunuz?`);
-                if (!confirm) return;
+                const confirmSave = confirm(`Ödeme toplamı işlem tutarıyla eşleşmiyor. Kalan: ${document.getElementById('kalanTutar').textContent}\n\nYine de kaydetmek istiyor musunuz?`);
+                if (!confirmSave) return;
             }
 
             console.log('Transaction Data:', data);
             alert('İşlem başarıyla kaydedildi!');
-
-            // In real app, send to backend
-            // await fetch('/api/transactions', { method: 'POST', body: JSON.stringify(data) });
         }
 
         // Clear form
         function clearForm() {
             if (!confirm('Formu temizlemek istediğinize emin misiniz?')) return;
 
-            document.getElementById('musteriDurum').value = '';
+            selectedCustomer = null;
             document.getElementById('unvan').value = '';
+            document.getElementById('durumBadge').className = '';
+            document.getElementById('durumBadge').textContent = 'Müşteri seçiniz';
             document.getElementById('vergiMuafiyet').value = 'YOK';
             document.getElementById('islemTuru').value = '';
             document.getElementById('kodu').value = '';
@@ -641,30 +875,29 @@
             document.getElementById('fiyat').value = '';
             document.getElementById('vergi').value = '0.00';
             document.getElementById('tutar').value = '';
-            document.getElementById('birim').value = '';
+            document.getElementById('birim').value = 'TL';
             document.getElementById('valorTarihi').valueAsDate = new Date();
 
-            // Clear currency selection
-            document.querySelectorAll('.currency-tag-small').forEach(tag => {
-                tag.classList.remove('active');
-            });
+            // Clear tags
+            document.querySelectorAll('.islem-tag').forEach(tag => tag.classList.remove('active'));
+            document.querySelectorAll('.currency-tag-small').forEach(tag => tag.classList.remove('active'));
 
-            // Reset payment banks to single row
+            // Reset payment banks
             const tbody = document.getElementById('paymentBanksBody');
             tbody.innerHTML = `
                 <tr>
                     <td>
-                        <select class="payment-bank">
+                        <select class="payment-bank" onchange="updatePaymentCurrency(this)">
                             <option value="">Banka Seçiniz...</option>
-                            <option value="Denizbank">Denizbank</option>
-                            <option value="İşbankası">İşbankası</option>
-                            <option value="Garanti BBVA">Garanti BBVA</option>
-                            <option value="Yapı Kredi">Yapı Kredi</option>
-                            <option value="Akbank">Akbank</option>
-                            <option value="QNB Finansbank">QNB Finansbank</option>
-                            <option value="Ziraat Bankası">Ziraat Bankası</option>
-                            <option value="Halkbank">Halkbank</option>
-                            <option value="Vakıfbank">Vakıfbank</option>
+                            <option value="Denizbank - TR33 0012 3456 7890 1234 5678 90">Denizbank - TR33 0012 3456 7890 1234 5678 90</option>
+                            <option value="İşbankası - TR44 0006 4000 0011 2345 6789 01">İşbankası - TR44 0006 4000 0011 2345 6789 01</option>
+                            <option value="Garanti BBVA - TR55 0006 2000 0550 0006 2958 47">Garanti BBVA - TR55 0006 2000 0550 0006 2958 47</option>
+                            <option value="Yapı Kredi - TR76 0006 7010 0000 0012 3456 78">Yapı Kredi - TR76 0006 7010 0000 0012 3456 78</option>
+                            <option value="Akbank - TR98 0004 6006 0888 8000 1234 56">Akbank - TR98 0004 6006 0888 8000 1234 56</option>
+                            <option value="QNB Finansbank - TR12 0011 1000 0000 0123 4567 89">QNB Finansbank - TR12 0011 1000 0000 0123 4567 89</option>
+                            <option value="Ziraat Bankası - TR44 0001 0001 7845 6789 3050 01">Ziraat Bankası - TR44 0001 0001 7845 6789 3050 01</option>
+                            <option value="Halkbank - TR66 0001 2009 4520 0016 0000 01">Halkbank - TR66 0001 2009 4520 0016 0000 01</option>
+                            <option value="Vakıfbank - TR88 0001 5001 5800 7289 1234 56">Vakıfbank - TR88 0001 5001 5800 7289 1234 56</option>
                         </select>
                     </td>
                     <td>
