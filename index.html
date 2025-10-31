@@ -999,11 +999,17 @@
             durumBadge.className = 'status-badge ' + customer.status.toLowerCase();
             durumBadge.textContent = customer.status;
 
-            // Update BSMV
-            document.getElementById('bsmv').value = customer.bsmv;
-
             // Update Vergi Muafiyet - Auto-fill based on customer
             document.getElementById('vergiMuafiyet').value = customer.vergiMuafiyet;
+
+            // Update BSMV based on Vergi Muafiyet
+            // Vergi Muafiyet VAR → BSMV YOK
+            // Vergi Muafiyet YOK → BSMV VAR
+            if (customer.vergiMuafiyet === 'VAR') {
+                document.getElementById('bsmv').value = 'YOK';
+            } else {
+                document.getElementById('bsmv').value = 'VAR';
+            }
 
             // Hide autocomplete
             document.getElementById('customerList').classList.remove('active');
@@ -1089,15 +1095,56 @@
 
         // Refresh rates - NEW
         function refreshRates() {
-            alert('Kurlar yenileniyor... (Bu özellik yakında aktif olacak)');
+            // Simulate rate updates with small random changes
+            const currencies = ['USD', 'EUR', 'GBP', 'CHF'];
+
+            currencies.forEach(currency => {
+                // Find all rate displays for this currency
+                const rateCard = document.querySelector(`.rate-card[data-currency="${currency}"]`);
+                if (!rateCard) return;
+
+                // Get current rate
+                const currentRate = parseFloat(rateCard.getAttribute('data-rate'));
+
+                // Generate random change between -0.5 and +0.5
+                const change = (Math.random() - 0.5) * 1;
+                const newRate = Math.max(1, currentRate + change); // Don't go below 1
+
+                // Update rate card
+                rateCard.setAttribute('data-rate', newRate.toFixed(2));
+                rateCard.querySelector('.rate-card-value').textContent = newRate.toFixed(2);
+
+                // Update change indicator
+                const changeElement = rateCard.querySelector('.rate-card-change');
+                const absChange = Math.abs(change);
+                if (change > 0) {
+                    changeElement.className = 'rate-card-change positive';
+                    changeElement.textContent = `↑ ${absChange.toFixed(2)}`;
+                } else {
+                    changeElement.className = 'rate-card-change negative';
+                    changeElement.textContent = `↓ ${absChange.toFixed(2)}`;
+                }
+
+                // Update top bar rate
+                const topRateItems = document.querySelectorAll('.rate-item');
+                topRateItems.forEach(item => {
+                    const label = item.querySelector('.rate-label').textContent;
+                    if (label === currency) {
+                        item.querySelector('.rate-value').textContent = newRate.toFixed(2);
+                    }
+                });
+            });
+
+            // Show success message
+            alert('Kurlar güncellendi!');
         }
 
-        // Update calculation with automatic tax (binde 2 if vergiMuafiyet is YOK)
+        // Update calculation with automatic tax (binde 2 if BSMV is VAR)
         function updateCalculation() {
             const kodu = document.getElementById('kodu').value;
             const miktar = parseFloat(document.getElementById('miktar').value) || 0;
             const fiyat = parseFloat(document.getElementById('fiyat').value) || 0;
-            const vergiMuafiyet = document.getElementById('vergiMuafiyet').value;
+            const bsmv = document.getElementById('bsmv').value;
 
             if (!kodu || miktar === 0 || fiyat === 0) {
                 document.getElementById('vergi').value = '0.00';
@@ -1111,9 +1158,11 @@
             // Calculate base amount
             const baseAmount = miktar * fiyat;
 
-            // Calculate tax (binde 2 = 0.002 if vergiMuafiyet is YOK)
+            // Calculate tax (binde 2 = 0.002 if BSMV is VAR)
+            // BSMV VAR → Calculate tax
+            // BSMV YOK → No tax
             let vergi = 0;
-            if (vergiMuafiyet === 'YOK') {
+            if (bsmv === 'VAR') {
                 vergi = baseAmount * 0.002; // %0.2 = binde 2 (1000'de 2)
             }
 
