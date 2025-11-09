@@ -467,6 +467,200 @@
             font-size: 24px;
             font-weight: bold;
         }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 1024px) {
+            .two-column-container {
+                grid-template-columns: 1fr;
+            }
+
+            .form-panel {
+                border-right: none;
+                border-bottom: 2px solid #e2e8f0;
+                border-radius: 12px 12px 0 0;
+                max-height: none;
+            }
+
+            .history-panel {
+                border-radius: 0 0 12px 12px;
+                max-height: 500px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .form-panel {
+                padding: 15px;
+            }
+
+            .history-panel {
+                padding: 15px;
+            }
+
+            .header-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .field-label {
+                min-width: 120px;
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+
+            .field-value {
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .table-container table {
+                min-width: 800px;
+                font-size: 12px;
+            }
+
+            .table-container th,
+            .table-container td {
+                padding: 6px 8px;
+            }
+
+            .table-container input,
+            .table-container select {
+                font-size: 12px;
+                padding: 6px;
+            }
+
+            .calculated-display {
+                margin: 10px 0;
+                padding: 12px;
+            }
+
+            .calculated-display .label {
+                font-size: 11px;
+            }
+
+            .calculated-display .amount {
+                font-size: 20px;
+            }
+
+            .total-summary {
+                padding: 12px;
+            }
+
+            .total-row {
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+
+            .btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+
+            .history-header h2 {
+                font-size: 14px;
+            }
+
+            .transaction-count {
+                font-size: 10px;
+                padding: 2px 8px;
+            }
+
+            .filter-btn {
+                padding: 5px 10px;
+                font-size: 10px;
+            }
+
+            .transaction-card {
+                padding: 6px 8px;
+            }
+
+            .transaction-card-row {
+                font-size: 10px;
+                margin-bottom: 3px;
+            }
+
+            .bottom-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                padding: 15px;
+            }
+
+            .stat-item {
+                padding: 12px;
+            }
+
+            .stat-label {
+                font-size: 11px;
+            }
+
+            .stat-value {
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-panel {
+                padding: 10px;
+            }
+
+            .history-panel {
+                padding: 10px;
+            }
+
+            .field-group {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 5px;
+            }
+
+            .field-label {
+                min-width: 100%;
+                text-align: center;
+            }
+
+            .table-container table {
+                min-width: 1000px;
+            }
+
+            .calculated-display .amount {
+                font-size: 18px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+                width: 100%;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .bottom-stats {
+                grid-template-columns: 1fr;
+                padding: 10px;
+            }
+
+            .history-filters > div {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .history-filters .filter-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
