@@ -107,8 +107,8 @@
         .transaction-card {
             background: white;
             border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 12px;
+            border-radius: 4px;
+            padding: 8px 10px;
             transition: all 0.2s;
         }
 
@@ -121,8 +121,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 6px;
-            font-size: 12px;
+            margin-bottom: 4px;
+            font-size: 11px;
         }
 
         .transaction-card-row:last-child {
@@ -489,23 +489,15 @@
 
                 <div class="header-row">
                     <div class="field-group">
-                        <div class="field-label">UNVAN</div>
-                        <div class="autocomplete-container">
-                            <input type="text" class="field-value" id="unvan" placeholder="Müşteri aratın..." autocomplete="off" oninput="filterCustomers()" onfocus="showCustomerList()">
-                            <div class="autocomplete-list" id="customerList"></div>
-                        </div>
-                    </div>
-                    <div class="field-group">
                         <div class="field-label">MÜŞTERİ DURUM</div>
                         <div class="field-value readonly" id="musteriDurum" style="background: #f0f0f0; display: flex; align-items: center;">
                             <span id="durumBadge">Müşteri seçiniz</span>
                         </div>
                     </div>
-                </div>
-
-                <div class="field-group" style="margin-bottom: 20px;">
-                    <div class="field-label">VERGİ MUAFİYET</div>
-                    <input type="text" class="field-value readonly" id="vergiMuafiyet" value="Hayır" readonly>
+                    <div class="field-group">
+                        <div class="field-label">VERGİ MUAFİYET</div>
+                        <input type="text" class="field-value readonly" id="vergiMuafiyet" value="Hayır" readonly>
+                    </div>
                 </div>
 
                 <!-- Transaction Section -->
@@ -514,7 +506,8 @@
                     <table>
                         <thead>
                             <tr>
-                                <th style="width: 140px;">İşlem Türü</th>
+                                <th style="width: 200px;">Unvan</th>
+                                <th style="width: 120px;">İşlem Türü</th>
                                 <th style="width: 140px;">Para Birimi</th>
                                 <th style="width: 120px;">Miktar</th>
                                 <th style="width: 80px;">BSMV</th>
@@ -528,14 +521,20 @@
                         <tbody>
                             <tr>
                                 <td>
-                                    <select id="islemTuru" onchange="selectCurrency()">
+                                    <div class="autocomplete-container" style="position: relative;">
+                                        <input type="text" id="unvanTable" placeholder="Müşteri aratın..." autocomplete="off" oninput="filterCustomers()" onfocus="showCustomerList()" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                                        <div class="autocomplete-list" id="customerList"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <select id="islemTuru" onchange="selectCurrency(); updateTotalLabel()">
                                         <option value="">Seçiniz</option>
                                         <option value="ALIŞ">ALIŞ</option>
                                         <option value="SATIŞ">SATIŞ</option>
                                     </select>
                                 </td>
                                 <td>
-                                    <select id="kodu" onchange="selectCurrency()">
+                                    <select id="kodu" onchange="selectCurrency(); updateTotalLabel()">
                                         <option value="">Seçiniz</option>
                                         <option value="TL">TL - Türk Lirası</option>
                                         <option value="USD">USD - Amerikan Doları</option>
@@ -559,10 +558,16 @@
                                     <input type="number" id="miktar" step="0.01" placeholder="0.00" oninput="updateCalculation()">
                                 </td>
                                 <td>
-                                    <input type="text" id="bsmv" readonly style="background: #f0f0f0; text-align: center;" value="YOK">
+                                    <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
+                                        <input type="text" id="bsmv" readonly style="background: #f0f0f0; text-align: center; width: 100%;" value="YOK">
+                                        <label style="font-size: 10px; display: flex; align-items: center; gap: 3px; cursor: pointer; white-space: nowrap;">
+                                            <input type="checkbox" id="vergiDahil" onchange="updateCalculation()" style="cursor: pointer;">
+                                            <span>Vergi Dahil</span>
+                                        </label>
+                                    </div>
                                 </td>
                                 <td>
-                                    <input type="number" id="fiyat" step="0.0001" placeholder="0.0000" oninput="updateCalculation()">
+                                    <input type="number" id="fiyat" step="0.0001" placeholder="0.0000" oninput="updateCalculation()" onblur="checkExchangeRateMargin()">
                                 </td>
                                 <td>
                                     <input type="number" id="vergi" readonly step="0.01" placeholder="0.00" value="0.00" style="background: #f0f0f0;">
@@ -583,7 +588,7 @@
 
                 <!-- Calculated Total Display -->
                 <div class="calculated-display">
-                    <div class="label">TOPLAM TUTAR</div>
+                    <div class="label" id="toplamLabel">TOPLAM TL</div>
                     <div class="amount" id="toplamTutar">0,00 TL</div>
                 </div>
 
@@ -670,7 +675,12 @@
 
                 <div class="history-filters">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; width: 100%;">
-                        <span style="font-size: 11px; font-weight: 600; color: #64748b;">Durum Filtresi:</span>
+                        <span style="font-size: 11px; font-weight: 600; color: #64748b;">Temsilci:</span>
+                        <button class="filter-btn" data-filter-type="temsilci" onclick="filterByTemsilci('Kendi')">Kendi İşlemlerim</button>
+                        <button class="filter-btn active" data-filter-type="temsilci" onclick="filterByTemsilci('Tümü')">Tüm İşlemler</button>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; width: 100%;">
+                        <span style="font-size: 11px; font-weight: 600; color: #64748b;">Durum:</span>
                         <button class="filter-btn active" data-filter-type="durum" onclick="filterByDurum('Tümü')">Tümü</button>
                         <button class="filter-btn" data-filter-type="durum" onclick="filterByDurum('Ödeme Hazır')">Ödeme Hazır</button>
                         <button class="filter-btn" data-filter-type="durum" onclick="filterByDurum('Ödeme Bekliyor')">Ödeme Bekliyor</button>
@@ -678,6 +688,7 @@
                         <button class="filter-btn" data-filter-type="durum" onclick="filterByDurum('Onay Bekliyor')">Onay Bekliyor</button>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; width: 100%;">
+                        <span style="font-size: 11px; font-weight: 600; color: #64748b;">İşlem:</span>
                         <button class="filter-btn active" data-filter-type="islem" onclick="filterTransactions('Tümü')">Tümü</button>
                         <button class="filter-btn" data-filter-type="islem" onclick="filterTransactions('ALIŞ')">Alış</button>
                         <button class="filter-btn" data-filter-type="islem" onclick="filterTransactions('SATIŞ')">Satış</button>
@@ -730,10 +741,22 @@
             { name: 'Hüseyin Koç', status: 'Aktif', bsmv: 'YOK', vergiMuafiyet: 'YOK' }
         ];
 
+        // Exchange rate margin settings (max deviation allowed)
+        const exchangeRateMargin = {
+            'USD': { buy: 0.10, sell: 0.10 },  // 10 kuruş marj
+            'EUR': { buy: 0.15, sell: 0.15 },  // 15 kuruş marj
+            'GBP': { buy: 0.20, sell: 0.20 },
+            'CHF': { buy: 0.15, sell: 0.15 },
+            'JPY': { buy: 0.005, sell: 0.005 },
+            'default': { buy: 0.10, sell: 0.10 }
+        };
+
         let selectedCustomer = null;
         let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
         let currentFilter = 'Tümü';
         let currentDurumFilter = 'Tümü';
+        let currentTemsilciFilter = 'Tümü';
+        const currentTemsilciName = document.getElementById('temsilci').value;
 
         // Initialize dates
         document.getElementById('islemTarihi').valueAsDate = new Date();
@@ -751,7 +774,7 @@
         }
 
         function filterCustomers() {
-            const searchValue = document.getElementById('unvan').value.toLowerCase();
+            const searchValue = document.getElementById('unvanTable').value.toLowerCase();
             const customerList = document.getElementById('customerList');
 
             const filtered = customers.filter(c =>
@@ -777,7 +800,7 @@
             if (!customer) return;
 
             selectedCustomer = customer;
-            document.getElementById('unvan').value = customer.name;
+            document.getElementById('unvanTable').value = customer.name;
 
             const durumBadge = document.getElementById('durumBadge');
             durumBadge.className = 'status-badge ' + customer.status.toLowerCase();
@@ -833,12 +856,29 @@
             updateCalculation();
         }
 
+        // Update total label based on transaction type and currency
+        function updateTotalLabel() {
+            const islemTuru = document.getElementById('islemTuru').value;
+            const kodu = document.getElementById('kodu').value;
+            const toplamLabel = document.getElementById('toplamLabel');
+
+            // Döviz yatırımı: ALIŞ ve döviz ise TOPLAM DÖVİZ
+            if (islemTuru === 'ALIŞ' && kodu && kodu !== 'TL') {
+                toplamLabel.textContent = 'TOPLAM DÖVİZ';
+            } else {
+                toplamLabel.textContent = 'TOPLAM TL';
+            }
+
+            updateCalculation();
+        }
+
         // Update calculation
         function updateCalculation() {
             const kodu = document.getElementById('kodu').value;
             const miktar = parseFloat(document.getElementById('miktar').value) || 0;
             const fiyat = parseFloat(document.getElementById('fiyat').value) || 0;
             const bsmv = document.getElementById('bsmv').value;
+            const vergiDahil = document.getElementById('vergiDahil').checked;
 
             if (!kodu || miktar === 0 || fiyat === 0) {
                 document.getElementById('vergi').value = '0.00';
@@ -849,13 +889,24 @@
                 return;
             }
 
-            const baseAmount = miktar * fiyat;
+            let baseAmount = miktar * fiyat;
             let vergi = 0;
-            if (bsmv === 'VAR') {
-                vergi = baseAmount * 0.002;
-            }
+            let tutar = 0;
 
-            const tutar = baseAmount + vergi;
+            if (bsmv === 'VAR') {
+                if (vergiDahil) {
+                    // Vergi dahil: toplam tutardan vergiyi çıkar
+                    tutar = baseAmount;
+                    vergi = tutar - (tutar / 1.002); // %0.2 vergi dahil
+                    baseAmount = tutar - vergi;
+                } else {
+                    // Vergi hariç: toplam tutara vergiyi ekle
+                    vergi = baseAmount * 0.002;
+                    tutar = baseAmount + vergi;
+                }
+            } else {
+                tutar = baseAmount;
+            }
 
             document.getElementById('vergi').value = vergi.toFixed(2);
             const tutarFormatted = tutar.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -864,6 +915,45 @@
             document.getElementById('islemTutari').textContent = tutarFormatted + ' TL';
 
             calculatePaymentTotal();
+            updateTotalLabel();
+        }
+
+        // Check exchange rate margin
+        function checkExchangeRateMargin() {
+            const kodu = document.getElementById('kodu').value;
+            const islemTuru = document.getElementById('islemTuru').value;
+            const manuelFiyat = parseFloat(document.getElementById('fiyat').value) || 0;
+
+            if (!kodu || kodu === 'TL' || !islemTuru || manuelFiyat === 0) return;
+
+            // Son işlemden kuru bul
+            const lastTransaction = transactions
+                .filter(t => t.islem.kodu === kodu && t.islem.tur === islemTuru)
+                .sort((a, b) => b.id - a.id)[0];
+
+            if (!lastTransaction || !lastTransaction.islem.fiyat) return;
+
+            const lastRate = lastTransaction.islem.fiyat;
+            const margin = exchangeRateMargin[kodu] || exchangeRateMargin['default'];
+            const allowedMargin = islemTuru === 'ALIŞ' ? margin.buy : margin.sell;
+
+            const deviation = Math.abs(manuelFiyat - lastRate);
+
+            if (deviation > allowedMargin) {
+                const fiyatInput = document.getElementById('fiyat');
+                fiyatInput.style.background = '#fee2e2';
+                fiyatInput.style.borderColor = '#ef4444';
+
+                alert(`⚠️ KUR MARJI UYARISI!\n\n` +
+                      `Son ${kodu} ${islemTuru} kuru: ${lastRate.toFixed(4)} TL\n` +
+                      `Girilen kur: ${manuelFiyat.toFixed(4)} TL\n` +
+                      `Fark: ${deviation.toFixed(4)} TL\n\n` +
+                      `İzin verilen maksimum marj: ${allowedMargin.toFixed(4)} TL\n\n` +
+                      `Lütfen kuru kontrol ediniz!`);
+            } else {
+                document.getElementById('fiyat').style.background = '';
+                document.getElementById('fiyat').style.borderColor = '';
+            }
         }
 
         // Add payment row
@@ -1050,10 +1140,17 @@
 
             let filtered = transactions;
 
+            // Temsilci filtresi
+            if (currentTemsilciFilter === 'Kendi') {
+                filtered = filtered.filter(t => t.temsilci === currentTemsilciName);
+            }
+
+            // İşlem türü filtresi
             if (currentFilter !== 'Tümü') {
                 filtered = filtered.filter(t => t.islem.tur === currentFilter);
             }
 
+            // Durum filtresi
             if (currentDurumFilter !== 'Tümü') {
                 filtered = filtered.filter(t => t.durum === currentDurumFilter);
             }
@@ -1111,6 +1208,15 @@
         function filterByDurum(durum) {
             currentDurumFilter = durum;
             document.querySelectorAll('.filter-btn[data-filter-type="durum"]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            renderTransactions();
+        }
+
+        function filterByTemsilci(temsilci) {
+            currentTemsilciFilter = temsilci;
+            document.querySelectorAll('.filter-btn[data-filter-type="temsilci"]').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
