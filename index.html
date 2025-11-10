@@ -179,6 +179,208 @@
             font-size: 11px;
         }
 
+        /* Customer Balance Button */
+        .balance-button {
+            background: linear-gradient(135deg, #a67c52 0%, #8b6f47 100%);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            width: 100%;
+            margin-bottom: 15px;
+            display: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        .balance-button.active {
+            display: block;
+        }
+
+        .balance-button:hover {
+            background: linear-gradient(135deg, #8b6f47 0%, #76614a 100%);
+            box-shadow: 0 4px 12px rgba(166, 124, 82, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* Balance Modal */
+        .balance-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .balance-modal.active {
+            display: flex;
+        }
+
+        .balance-modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .balance-modal-header {
+            background: linear-gradient(135deg, #2d2d2d 0%, #3a3a3a 100%);
+            color: white;
+            padding: 20px 24px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #a67c52;
+        }
+
+        .balance-modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .balance-close-btn {
+            background: rgba(166, 124, 82, 0.2);
+            border: 1px solid rgba(166, 124, 82, 0.3);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .balance-close-btn:hover {
+            background: rgba(166, 124, 82, 0.4);
+            transform: scale(1.05);
+        }
+
+        .balance-modal-body {
+            padding: 24px;
+            background: #fafafa;
+        }
+
+        .balance-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .balance-section {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .balance-section.borc {
+            border-left: 3px solid #d32f2f;
+        }
+
+        .balance-section:not(.borc) {
+            border-left: 3px solid #00b300;
+        }
+
+        .balance-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b6b6b;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .balance-items {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .balance-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            padding: 10px 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .balance-item:hover {
+            background: #ececec;
+        }
+
+        .balance-currency {
+            font-weight: 600;
+            color: #4a4a4a;
+            font-size: 12px;
+        }
+
+        .balance-amount {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .balance-amount.alacak {
+            color: #00b300;
+        }
+
+        .balance-amount.borc {
+            color: #d32f2f;
+        }
+
+        .balance-amount.zero {
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .balance-total-row {
+            background: linear-gradient(135deg, #a67c52 0%, #8b6f47 100%);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(166, 124, 82, 0.2);
+        }
+
         .bottom-stats {
             background: white;
             padding: 15px 30px;
@@ -700,16 +902,16 @@
                     <table>
                         <thead>
                             <tr>
-                                <th style="width: 200px;">Unvan</th>
-                                <th style="width: 120px;">İşlem Türü</th>
-                                <th style="width: 140px;">Para Birimi</th>
-                                <th style="width: 120px;">Miktar</th>
-                                <th style="width: 80px;">BSMV</th>
-                                <th style="width: 100px;">Fiyat (Kur)</th>
-                                <th style="width: 100px;">Vergi</th>
-                                <th style="width: 150px;">Tutar</th>
-                                <th style="width: 80px;">Birim</th>
-                                <th style="width: 120px;">Valör Tarihi</th>
+                                <th style="width: 180px;">Unvan</th>
+                                <th style="width: 110px;">İşlem Türü</th>
+                                <th style="width: 130px;">Para Birimi</th>
+                                <th style="width: 110px;">Miktar</th>
+                                <th style="width: 90px;">BSMV</th>
+                                <th style="width: 130px;">Fiyat (Kur)</th>
+                                <th style="width: 130px;">Vergi</th>
+                                <th style="width: 160px;">Tutar</th>
+                                <th style="width: 70px;">Birim</th>
+                                <th style="width: 130px;">Valör Tarihi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -749,7 +951,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <input type="number" id="miktar" step="0.01" placeholder="0.00" oninput="updateCalculation()">
+                                    <input type="number" id="miktar" step="0.01" min="0" placeholder="0.00" oninput="updateCalculation()">
                                 </td>
                                 <td>
                                     <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
@@ -761,7 +963,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <input type="number" id="fiyat" step="0.0001" placeholder="0.0000" oninput="updateCalculation()" onblur="checkExchangeRateMargin()">
+                                    <input type="number" id="fiyat" step="0.0001" min="0" placeholder="0.0000" oninput="updateCalculation()" onblur="checkExchangeRateMargin()">
                                 </td>
                                 <td>
                                     <input type="number" id="vergi" readonly step="0.01" placeholder="0.00" value="0.00" style="background: #f0f0f0;">
@@ -827,7 +1029,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <input type="number" class="payment-amount" step="0.01" placeholder="0.00" oninput="calculatePaymentTotal()">
+                                    <input type="number" class="payment-amount" step="0.01" min="0" placeholder="0.00" oninput="calculatePaymentTotal()">
                                 </td>
                                 <td style="text-align: center;">
                                     <button type="button" class="btn-remove" onclick="removePaymentRow(this)">Sil</button>
@@ -863,6 +1065,11 @@
 
             <!-- Right Panel: Transaction History -->
             <div class="history-panel">
+                <!-- Balance Button -->
+                <button class="balance-button" id="balanceButton" onclick="openBalanceModal()">
+                    <span id="balanceButtonText">💰 Müşteri Bakiyesi</span>
+                </button>
+
                 <div class="history-header">
                     <h2>İşlem Geçmişi <span class="transaction-count" id="transactionCount">0</span></h2>
                 </div>
@@ -920,19 +1127,126 @@
         </div>
     </div>
 
+    <!-- Balance Modal -->
+    <div class="balance-modal" id="balanceModal" onclick="closeBalanceModalOnOutside(event)">
+        <div class="balance-modal-content" onclick="event.stopPropagation()">
+            <div class="balance-modal-header">
+                <div class="balance-modal-title" id="balanceModalTitle">Müşteri Bakiye Durumu</div>
+                <button class="balance-close-btn" onclick="closeBalanceModal()">×</button>
+            </div>
+            <div class="balance-modal-body">
+                <div class="balance-grid">
+                    <div class="balance-section">
+                        <div class="balance-section-title">Alacak (+)</div>
+                        <div class="balance-items" id="modalAlacakList">
+                            <!-- Alacaklar buraya -->
+                        </div>
+                    </div>
+                    <div class="balance-section borc">
+                        <div class="balance-section-title">Borç (-)</div>
+                        <div class="balance-items" id="modalBorcList">
+                            <!-- Borçlar buraya -->
+                        </div>
+                    </div>
+                </div>
+                <div class="balance-total-row">
+                    <span>Net Durum (USD Karşılığı)</span>
+                    <span id="modalNetDurum">0,00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Customer database
         const customers = [
-            { name: 'Mehmet GÖR', status: 'Aktif', bsmv: 'YOK', vergiMuafiyet: 'YOK' },
-            { name: 'Serkan Yüksel', status: 'Aktif', bsmv: 'VAR', vergiMuafiyet: 'VAR' },
-            { name: 'Ahmet Demir', status: 'Pasif', bsmv: 'VAR', vergiMuafiyet: 'YOK' },
-            { name: 'Ali Yılmaz', status: 'Aktif', bsmv: 'YOK', vergiMuafiyet: 'VAR' },
-            { name: 'Ayşe Şahin', status: 'Aktif', bsmv: 'VAR', vergiMuafiyet: 'YOK' },
-            { name: 'Fatma Çelik', status: 'Aktif', bsmv: 'YOK', vergiMuafiyet: 'YOK' },
-            { name: 'Zeynep Arslan', status: 'Pasif', bsmv: 'VAR', vergiMuafiyet: 'VAR' },
-            { name: 'Elif Öztürk', status: 'Aktif', bsmv: 'YOK', vergiMuafiyet: 'YOK' },
-            { name: 'Mustafa Aydın', status: 'Aktif', bsmv: 'VAR', vergiMuafiyet: 'VAR' },
-            { name: 'Hüseyin Koç', status: 'Aktif', bsmv: 'YOK', vergiMuafiyet: 'YOK' }
+            {
+                name: 'Mehmet GÖR',
+                status: 'Aktif',
+                bsmv: 'YOK',
+                vergiMuafiyet: 'YOK',
+                alacak: {
+                    USD: 411418.23,
+                    EUR: 167024.29,
+                    GBP: 2000.00
+                },
+                borc: {
+                    TL: 2464757.32,
+                    CHF: 12999.22
+                }
+            },
+            {
+                name: 'Serkan Yüksel',
+                status: 'Aktif',
+                bsmv: 'VAR',
+                vergiMuafiyet: 'VAR',
+                alacak: { USD: 125000.00, EUR: 95000.00 },
+                borc: { TL: 850000.00 }
+            },
+            {
+                name: 'Ahmet Demir',
+                status: 'Pasif',
+                bsmv: 'VAR',
+                vergiMuafiyet: 'YOK',
+                alacak: { USD: 50000.00 },
+                borc: { TL: 450000.00 }
+            },
+            {
+                name: 'Ali Yılmaz',
+                status: 'Aktif',
+                bsmv: 'YOK',
+                vergiMuafiyet: 'VAR',
+                alacak: { USD: 200000.00, EUR: 80000.00, GBP: 15000.00 },
+                borc: { TL: 1200000.00 }
+            },
+            {
+                name: 'Ayşe Şahin',
+                status: 'Aktif',
+                bsmv: 'VAR',
+                vergiMuafiyet: 'YOK',
+                alacak: { USD: 75000.00 },
+                borc: { TL: 320000.00 }
+            },
+            {
+                name: 'Fatma Çelik',
+                status: 'Aktif',
+                bsmv: 'YOK',
+                vergiMuafiyet: 'YOK',
+                alacak: { USD: 180000.00, EUR: 120000.00 },
+                borc: {}
+            },
+            {
+                name: 'Zeynep Arslan',
+                status: 'Pasif',
+                bsmv: 'VAR',
+                vergiMuafiyet: 'VAR',
+                alacak: { USD: 25000.00 },
+                borc: { TL: 95000.00 }
+            },
+            {
+                name: 'Elif Öztürk',
+                status: 'Aktif',
+                bsmv: 'YOK',
+                vergiMuafiyet: 'YOK',
+                alacak: { USD: 95000.00, EUR: 45000.00 },
+                borc: { TL: 680000.00 }
+            },
+            {
+                name: 'Mustafa Aydın',
+                status: 'Aktif',
+                bsmv: 'VAR',
+                vergiMuafiyet: 'VAR',
+                alacak: { USD: 300000.00, EUR: 150000.00, CHF: 25000.00 },
+                borc: { TL: 1500000.00 }
+            },
+            {
+                name: 'Hüseyin Koç',
+                status: 'Aktif',
+                bsmv: 'YOK',
+                vergiMuafiyet: 'YOK',
+                alacak: { USD: 65000.00 },
+                borc: { TL: 420000.00 }
+            }
         ];
 
         // Exchange rate margin settings (max deviation allowed)
@@ -951,6 +1265,9 @@
         let currentDurumFilter = 'Tümü';
         let currentTemsilciFilter = 'Tümü';
         const currentTemsilciName = document.getElementById('temsilci').value;
+
+        // Popüler para birimleri
+        const popularCurrencies = ['TL', 'USD', 'EUR', 'GBP', 'CHF'];
 
         // Initialize dates
         document.getElementById('islemTarihi').valueAsDate = new Date();
@@ -1002,14 +1319,122 @@
 
             document.getElementById('vergiMuafiyet').value = customer.vergiMuafiyet === 'VAR' ? 'Evet' : 'Hayır';
 
-            if (customer.vergiMuafiyet === 'VAR') {
-                document.getElementById('bsmv').value = 'YOK';
-            } else {
-                document.getElementById('bsmv').value = 'VAR';
-            }
+            // BSMV her zaman VAR olarak ayarlanır (vergi hesaplanıp hesaplanmayacağı ayrı bir mantık)
+            document.getElementById('bsmv').value = 'VAR';
 
             document.getElementById('customerList').classList.remove('active');
             updateCalculation();
+            showBalanceButton(customer);
+        }
+
+        // Show balance button
+        function showBalanceButton(customer) {
+            const balanceButton = document.getElementById('balanceButton');
+            const balanceButtonText = document.getElementById('balanceButtonText');
+
+            if (!customer) {
+                balanceButton.classList.remove('active');
+                return;
+            }
+
+            balanceButtonText.textContent = `💰 ${customer.name} Bakiyesi`;
+            balanceButton.classList.add('active');
+        }
+
+        // Open balance modal
+        function openBalanceModal() {
+            if (!selectedCustomer) return;
+
+            const modal = document.getElementById('balanceModal');
+            const modalTitle = document.getElementById('balanceModalTitle');
+            const modalAlacakList = document.getElementById('modalAlacakList');
+            const modalBorcList = document.getElementById('modalBorcList');
+            const modalNetDurum = document.getElementById('modalNetDurum');
+
+            modalTitle.textContent = selectedCustomer.name + ' - Bakiye Durumu';
+
+            const usdRate = 34.50;
+
+            // Alacakları oluştur - tüm popüler para birimleri
+            const alacakHTML = popularCurrencies.map(currency => {
+                const amount = (selectedCustomer.alacak && selectedCustomer.alacak[currency]) || 0;
+                const cssClass = amount > 0 ? 'alacak' : 'zero';
+                return `
+                    <div class="balance-item">
+                        <span class="balance-currency">${currency}</span>
+                        <span class="balance-amount ${cssClass}">${amount.toLocaleString('tr-TR', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        })}</span>
+                    </div>
+                `;
+            }).join('');
+
+            // Borçları oluştur - tüm popüler para birimleri
+            const borcHTML = popularCurrencies.map(currency => {
+                const amount = (selectedCustomer.borc && selectedCustomer.borc[currency]) || 0;
+                const cssClass = amount > 0 ? 'borc' : 'zero';
+                return `
+                    <div class="balance-item">
+                        <span class="balance-currency">${currency}</span>
+                        <span class="balance-amount ${cssClass}">${amount.toLocaleString('tr-TR', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        })}</span>
+                    </div>
+                `;
+            }).join('');
+
+            modalAlacakList.innerHTML = alacakHTML;
+            modalBorcList.innerHTML = borcHTML;
+
+            // Net durumu hesapla
+            let totalAlacakUSD = 0;
+            let totalBorcUSD = 0;
+
+            if (selectedCustomer.alacak) {
+                Object.entries(selectedCustomer.alacak).forEach(([currency, amount]) => {
+                    if (currency === 'TL') {
+                        totalAlacakUSD += amount / usdRate;
+                    } else {
+                        totalAlacakUSD += amount;
+                    }
+                });
+            }
+
+            if (selectedCustomer.borc) {
+                Object.entries(selectedCustomer.borc).forEach(([currency, amount]) => {
+                    if (currency === 'TL') {
+                        totalBorcUSD += amount / usdRate;
+                    } else {
+                        totalBorcUSD += amount;
+                    }
+                });
+            }
+
+            const netUSD = totalAlacakUSD - totalBorcUSD;
+            const netColor = netUSD >= 0 ? '#10b981' : '#ef4444';
+            const netSign = netUSD >= 0 ? '+' : '';
+
+            modalNetDurum.textContent = netSign + netUSD.toLocaleString('tr-TR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            modalNetDurum.style.color = netColor;
+
+            modal.classList.add('active');
+        }
+
+        // Close balance modal
+        function closeBalanceModal() {
+            document.getElementById('balanceModal').classList.remove('active');
+        }
+
+        // Close modal on outside click
+        function closeBalanceModalOnOutside(event) {
+            if (event.target.id === 'balanceModal') {
+                closeBalanceModal();
+            }
         }
 
         document.addEventListener('click', function(e) {
@@ -1056,23 +1481,27 @@
             const kodu = document.getElementById('kodu').value;
             const toplamLabel = document.getElementById('toplamLabel');
 
-            // Döviz yatırımı: ALIŞ ve döviz ise TOPLAM DÖVİZ
-            if (islemTuru === 'ALIŞ' && kodu && kodu !== 'TL') {
-                toplamLabel.textContent = 'TOPLAM DÖVİZ';
+            // ALIŞ: Müşteriden döviz alıyoruz → TL ödeme yapacağız
+            // SATIŞ: Müşteriye döviz satıyoruz → Döviz ödeme yapacağız
+            if (islemTuru === 'SATIŞ' && kodu && kodu !== 'TL') {
+                toplamLabel.textContent = 'TOPLAM ' + kodu;
             } else {
                 toplamLabel.textContent = 'TOPLAM TL';
             }
 
             updateCalculation();
+            updatePaymentCurrencyDefaults();
         }
 
         // Update calculation
         function updateCalculation() {
             const kodu = document.getElementById('kodu').value;
+            const islemTuru = document.getElementById('islemTuru').value;
             const miktar = parseFloat(document.getElementById('miktar').value) || 0;
             const fiyat = parseFloat(document.getElementById('fiyat').value) || 0;
             const bsmv = document.getElementById('bsmv').value;
             const vergiDahil = document.getElementById('vergiDahil').checked;
+            const vergiMuafiyet = document.getElementById('vergiMuafiyet').value;
 
             if (!kodu || miktar === 0 || fiyat === 0) {
                 document.getElementById('vergi').value = '0.00';
@@ -1086,8 +1515,13 @@
             let baseAmount = miktar * fiyat;
             let vergi = 0;
             let tutar = 0;
+            let paymentAmount = 0; // Ödeme miktarı (döviz veya TL)
+            let paymentCurrency = 'TL';
 
-            if (bsmv === 'VAR') {
+            // Vergi hesaplama: Vergi Muafiyet "Hayır" ise VEYA "Vergi Dahil" checkbox işaretli ise
+            const vergiHesapla = (vergiMuafiyet === 'Hayır' || vergiDahil);
+
+            if (vergiHesapla) {
                 if (vergiDahil) {
                     // Vergi dahil: toplam tutardan vergiyi çıkar
                     tutar = baseAmount;
@@ -1102,11 +1536,28 @@
                 tutar = baseAmount;
             }
 
-            document.getElementById('vergi').value = vergi.toFixed(2);
-            const tutarFormatted = tutar.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            document.getElementById('tutar').value = tutarFormatted + ' TL';
-            document.getElementById('toplamTutar').textContent = tutarFormatted + ' TL';
-            document.getElementById('islemTutari').textContent = tutarFormatted + ' TL';
+            // SATIŞ: Müşteriye döviz satıyoruz → Ödeme döviz cinsinden
+            // ALIŞ: Müşteriden döviz alıyoruz → Ödeme TL cinsinden
+            if (islemTuru === 'SATIŞ' && kodu !== 'TL') {
+                paymentAmount = miktar; // Döviz miktarı
+                paymentCurrency = kodu;
+                const tutarFormatted = tutar.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                const paymentFormatted = paymentAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                document.getElementById('vergi').value = vergi.toFixed(2);
+                document.getElementById('tutar').value = tutarFormatted + ' TL';
+                document.getElementById('toplamTutar').textContent = paymentFormatted + ' ' + paymentCurrency;
+                document.getElementById('islemTutari').textContent = paymentFormatted + ' ' + paymentCurrency;
+            } else {
+                paymentAmount = tutar;
+                paymentCurrency = 'TL';
+                const tutarFormatted = tutar.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                document.getElementById('vergi').value = vergi.toFixed(2);
+                document.getElementById('tutar').value = tutarFormatted + ' TL';
+                document.getElementById('toplamTutar').textContent = tutarFormatted + ' TL';
+                document.getElementById('islemTutari').textContent = tutarFormatted + ' TL';
+            }
 
             calculatePaymentTotal();
             updateTotalLabel();
@@ -1160,6 +1611,15 @@
                 return;
             }
 
+            const islemTuru = document.getElementById('islemTuru').value;
+            const kodu = document.getElementById('kodu').value;
+
+            // Para birimini belirle
+            let defaultCurrency = 'TL';
+            if (islemTuru === 'SATIŞ' && kodu && kodu !== 'TL') {
+                defaultCurrency = kodu;
+            }
+
             const tbody = document.getElementById('paymentBanksBody');
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
@@ -1179,18 +1639,18 @@
                 </td>
                 <td>
                     <select class="payment-currency">
-                        <option value="TL">TL</option>
-                        <option value="USD">USD</option>
-                        <option value="EUR">EUR</option>
-                        <option value="GBP">GBP</option>
-                        <option value="CHF">CHF</option>
-                        <option value="JPY">JPY</option>
-                        <option value="CAD">CAD</option>
-                        <option value="AUD">AUD</option>
+                        <option value="TL" ${defaultCurrency === 'TL' ? 'selected' : ''}>TL</option>
+                        <option value="USD" ${defaultCurrency === 'USD' ? 'selected' : ''}>USD</option>
+                        <option value="EUR" ${defaultCurrency === 'EUR' ? 'selected' : ''}>EUR</option>
+                        <option value="GBP" ${defaultCurrency === 'GBP' ? 'selected' : ''}>GBP</option>
+                        <option value="CHF" ${defaultCurrency === 'CHF' ? 'selected' : ''}>CHF</option>
+                        <option value="JPY" ${defaultCurrency === 'JPY' ? 'selected' : ''}>JPY</option>
+                        <option value="CAD" ${defaultCurrency === 'CAD' ? 'selected' : ''}>CAD</option>
+                        <option value="AUD" ${defaultCurrency === 'AUD' ? 'selected' : ''}>AUD</option>
                     </select>
                 </td>
                 <td>
-                    <input type="number" class="payment-amount" step="0.01" placeholder="0.00" max="${kalan.toFixed(2)}" oninput="limitPaymentAmount(this); calculatePaymentTotal()">
+                    <input type="number" class="payment-amount" step="0.01" min="0" placeholder="0.00" max="${kalan.toFixed(2)}" oninput="limitPaymentAmount(this); calculatePaymentTotal()">
                 </td>
                 <td style="text-align: center;">
                     <button type="button" class="btn-remove" onclick="removePaymentRow(this)">Sil</button>
@@ -1219,6 +1679,23 @@
             }
         }
 
+        // Update payment currency defaults based on transaction type
+        function updatePaymentCurrencyDefaults() {
+            const islemTuru = document.getElementById('islemTuru').value;
+            const kodu = document.getElementById('kodu').value;
+
+            // SATIŞ işleminde ödeme para birimi döviz olmalı
+            let defaultCurrency = 'TL';
+            if (islemTuru === 'SATIŞ' && kodu && kodu !== 'TL') {
+                defaultCurrency = kodu;
+            }
+
+            // Tüm ödeme para birimlerini güncelle
+            document.querySelectorAll('.payment-currency').forEach(select => {
+                select.value = defaultCurrency;
+            });
+        }
+
         function updatePaymentCurrency(selectElement) {
             // Optional feature
         }
@@ -1234,6 +1711,15 @@
         }
 
         function calculatePaymentTotal() {
+            const islemTuru = document.getElementById('islemTuru').value;
+            const kodu = document.getElementById('kodu').value;
+
+            // Para birimini belirle
+            let currency = 'TL';
+            if (islemTuru === 'SATIŞ' && kodu && kodu !== 'TL') {
+                currency = kodu;
+            }
+
             let total = 0;
             document.querySelectorAll('.payment-amount').forEach(input => {
                 total += parseFloat(input.value) || 0;
@@ -1245,11 +1731,11 @@
 
             // Check if payment total exceeds transaction amount
             if (total > islemTutari && islemTutari > 0) {
-                alert('⚠️ UYARI: Ödeme toplamı işlem tutarını aşamaz!\n\nİşlem Tutarı: ' + islemTutari.toFixed(2) + ' TL\nÖdeme Toplamı: ' + total.toFixed(2) + ' TL');
+                alert(`⚠️ UYARI: Ödeme toplamı işlem tutarını aşamaz!\n\nİşlem Tutarı: ${islemTutari.toFixed(2)} ${currency}\nÖdeme Toplamı: ${total.toFixed(2)} ${currency}`);
             }
 
-            document.getElementById('odemeToplami').textContent = total.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' TL';
-            document.getElementById('kalanTutar').textContent = kalan.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' TL';
+            document.getElementById('odemeToplami').textContent = total.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + currency;
+            document.getElementById('kalanTutar').textContent = kalan.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + currency;
 
             const kalanElement = document.getElementById('kalanTutar');
             if (kalan > 0.01) {
@@ -1435,7 +1921,7 @@
 
         function clearForm() {
             selectedCustomer = null;
-            document.getElementById('unvan').value = '';
+            document.getElementById('unvanTable').value = '';
             document.getElementById('durumBadge').className = '';
             document.getElementById('durumBadge').textContent = 'Müşteri seçiniz';
             document.getElementById('vergiMuafiyet').value = 'Hayır';
@@ -1479,13 +1965,16 @@
                         </select>
                     </td>
                     <td>
-                        <input type="number" class="payment-amount" step="0.01" placeholder="0.00" oninput="calculatePaymentTotal()">
+                        <input type="number" class="payment-amount" step="0.01" min="0" placeholder="0.00" oninput="calculatePaymentTotal()">
                     </td>
                     <td style="text-align: center;">
                         <button type="button" class="btn-remove" onclick="removePaymentRow(this)">Sil</button>
                     </td>
                 </tr>
             `;
+
+            // Bakiye butonunu gizle
+            document.getElementById('balanceButton').classList.remove('active');
 
             updateCalculation();
         }
